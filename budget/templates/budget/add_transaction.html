@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Nueva transacción</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        form { display: flex; flex-direction: column; max-width: 400px; }
+        label { margin-top: 10px; }
+        input, select, textarea { margin-top: 5px; padding: 5px; }
+        button { margin-top: 20px; padding: 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>💰 Nueva Transacción</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar</button>
+    </form>
+
+    <p><a href="/">← Volver al listado</a></p>
+</body>
+</html>
