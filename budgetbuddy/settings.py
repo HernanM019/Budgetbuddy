@@ -117,7 +117,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'transaction_list'
+LOGOUT_REDIRECT_URL = 'login'
 #Line to indicate Django where to look our CSS/JS files inside the project
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'budget', 'static')]
 

@@ -1,0 +1,75 @@
+body {
+    background-color: #f8fafc;
+}
+
+h1, h4 {
+    color: #2b2b2b;
+}
+
+table td {
+    vertical-align: middle;
+}
+
+/* Efecto de eliminación suave para filas borradas */
+.table-danger {
+  transition: opacity 0.8s ease, transform 0.5s ease;
+  opacity: 0.3;
+  transform: scale(0.98);
+}
+/* Color diferente para boton EDITAR */
+.btn-warning {
+  color: #fff;
+}
+
+/* Centrar tarjetas de autenticación vertical y horizontalmente */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+.auth-card {
+  max-width: 400px;
+  width: 100%;
+}
+
+
+/* ======== Auth Pages ======== */
+body.auth-page {
+  background-color: #f5f7fb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  padding: 2rem;
+}
+
+.auth-title {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+}
+
+.auth-title span {
+  font-size: 1.6rem;
+  margin-right: 8px;
+}
+
+.btn-primary {
+  background-color: #1d4ed8;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #1e40af;
+}

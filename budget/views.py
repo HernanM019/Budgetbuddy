@@ -6,31 +6,65 @@ from django.shortcuts import redirect
 from .forms import TransactionForm
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .forms import CustomUserCreationForm as UserCreationForm
+from django.contrib.auth import login
+from django.contrib.auth import logout
+from .forms import CustomUserCreationForm
 
+#################################### MANEJO DE USUARIOS ##############################
+
+#Login requerido
+@login_required(login_url='login')
 def transaction_list(request):
-    transactions = Transaction.objects.all().order_by('-date')
-
+    transactions = Transaction.objects.filter(user=request.user).order_by('-date')
     total_income = sum(t.amount for t in transactions if t.type == 'INCOME')
     total_expense = sum(t.amount for t in transactions if t.type == 'EXPENSE')
     balance = total_income - total_expense
 
-    context = {
+    return render(request, 'budget/transaction_list.html', {
         'transactions': transactions,
         'total_income': total_income,
         'total_expense': total_expense,
         'balance': balance,
-    }
-    return render(request, 'budget/transaction_list.html', context)
+    })
 
+#Registro de usuarios
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # inicia sesión automáticamente tras registrarse
+            messages.success(request, f"¡Bienvenido, {user.username}! Tu cuenta fue creada correctamente.")
+            return redirect('transaction_list')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field.capitalize()}: {error}")
+    else:
+        form = UserCreationForm()
+    return render(request, 'budget/register.html', {'form': form})
+
+#Logout
+def logout_view(request):
+    logout(request)
+    messages.success(request, "👋 Sesión cerrada correctamente.")
+    return redirect('login')
+
+#################################### CRUDs ##############################
+
+#CRUD - ADD
 def add_transaction(request):
     if request.method == 'POST':
         form = TransactionForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Transacción registrada correctamente.")
+            transaction = form.save(commit=False)
+            transaction.user = request.user
+            transaction.save()
+            messages.success(request, "Registro agregado correctamente.")
             return redirect('transaction_list')
         else:
-            # Si hay error, mostramos el primer mensaje de error del formulario
             for field, error_list in form.errors.items():
                 for error in error_list:
                     messages.error(request, f"{field.capitalize()}: {error}")
@@ -42,7 +76,7 @@ def add_transaction(request):
 
 from django.http import JsonResponse
 
-
+#CRUD - DELETE
 def delete_transaction(request, pk):
     transaction = get_object_or_404(Transaction, pk=pk)
     if request.method == 'POST':
@@ -51,7 +85,25 @@ def delete_transaction(request, pk):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'success': True})
 
-        messages.success(request, "Transacción eliminada correctamente.")
+        messages.success(request, "Registro eliminado correctamente.")
         return redirect('transaction_list')
 
     return render(request, 'budget/confirm_delete.html', {'transaction': transaction})
+
+#CRUD - EDIT
+def edit_transaction(request, pk):
+    transaction = get_object_or_404(Transaction, pk=pk)
+    if request.method == 'POST':
+        form = TransactionForm(request.POST, instance=transaction)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Registro actualizado correctamente.")
+            return redirect('transaction_list')
+        else:
+            for field, error_list in form.errors.items():
+                for error in error_list:
+                    messages.error(request, f"{field.capitalize()}: {error}")
+    else:
+        form = TransactionForm(instance=transaction)
+
+    return render(request, 'budget/edit_transaction.html', {'form': form, 'transaction': transaction})
