@@ -1,0 +1,35 @@
+{% extends 'budget/base.html' %}
+
+{% block title %}Iniciar sesión - BudgetBuddy{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="card shadow-sm p-4 auth-card">
+    <h4 class="mb-3 text-center">🔒 Iniciar sesión</h4>
+
+    {% if form.errors %}
+      <div class="alert alert-danger text-center" role="alert">
+        Usuario o contraseña incorrectos. Intenta nuevamente.
+      </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="id_username" class="form-label">Usuario</label>
+        {{ form.username }}
+      </div>
+      <div class="mb-3">
+        <label for="id_password" class="form-label">Contraseña</label>
+        {{ form.password }}
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Entrar</button>
+    </form>
+
+    <p class="text-center mt-3">
+      ¿No tenés cuenta? <a href="{% url 'register' %}">Registrate aquí</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
