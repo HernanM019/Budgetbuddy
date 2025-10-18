@@ -5,7 +5,7 @@ from django.db import models
 class Transaction(models.Model):
     TYPE_CHOICES = [
         ('INCOME', 'Ingreso'),
-        ('EXPENSE', 'Gasto'),
+        ('EXPENSE', 'Egreso'),
     ]
 
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)

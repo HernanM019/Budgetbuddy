@@ -1,0 +1,24 @@
+{% extends 'budget/base.html' %}
+
+{% block title %}Eliminar transacción - BudgetBuddy{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm p-4 text-center">
+    <h4 class="mb-3 text-danger">⚠️ Confirmar eliminación</h4>
+    <p>¿Seguro que deseas eliminar la siguiente transacción?</p>
+
+    <ul class="list-group mb-3 text-start">
+        <li class="list-group-item"><strong>Tipo:</strong> {{ transaction.get_type_display }}</li>
+        <li class="list-group-item"><strong>Categoría:</strong> {{ transaction.category }}</li>
+        <li class="list-group-item"><strong>Monto:</strong> ${{ transaction.amount }}</li>
+        <li class="list-group-item"><strong>Fecha:</strong> {{ transaction.date }}</li>
+        <li class="list-group-item"><strong>Descripción:</strong> {{ transaction.description }}</li>
+    </ul>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a href="/" class="btn btn-secondary ms-2">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

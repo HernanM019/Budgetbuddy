@@ -9,3 +9,10 @@ h1, h4 {
 table td {
     vertical-align: middle;
 }
+
+/* Efecto de eliminación suave para filas borradas */
+.table-danger {
+  transition: opacity 0.8s ease, transform 0.5s ease;
+  opacity: 0.3;
+  transform: scale(0.98);
+}

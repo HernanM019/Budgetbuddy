@@ -3,6 +3,7 @@
 {% block title %}Mis transacciones - BudgetBuddy{% endblock %}
 
 {% block content %}
+{% csrf_token %}
     <div class="card shadow-sm">
         <div class="card-body">
             <h4 class="card-title mb-3">Resumen general</h4>
@@ -26,20 +27,82 @@
                 <th>Monto</th>
                 <th>Fecha</th>
                 <th>Descripción</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            {% for t in transactions %}
-                <tr>
-                    <td>{{ t.type }}</td>
-                    <td>{{ t.category }}</td>
-                    <td>${{ t.amount }}</td>
-                    <td>{{ t.date }}</td>
-                    <td>{{ t.description }}</td>
-                </tr>
-            {% empty %}
-                <tr><td colspan="5" class="text-center text-muted">No hay transacciones registradas.</td></tr>
-            {% endfor %}
-        </tbody>
+    {% for t in transactions %}
+        <tr>
+            <td>{{ t.get_type_display }}</td>
+            <td>{{ t.category }}</td>
+            <td>${{ t.amount }}</td>
+            <td>{{ t.date }}</td>
+            <td>{{ t.description }}</td>
+           <td>
+    <button class="btn btn-sm btn-danger delete-btn" data-id="{{ t.pk }}">Eliminar</button>
+           </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="5" class="text-center text-muted">No hay transacciones registradas.</td></tr>
+    {% endfor %}
+</tbody>
+
     </table>
 {% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const transactionId = this.getAttribute('data-id');
+            const row = this.closest('tr');
+
+            Swal.fire({
+                title: '¿Eliminar transacción?',
+                text: "Esta acción no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/delete/${transactionId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Eliminado',
+                                text: 'La transacción fue eliminada correctamente.',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            // Eliminar la fila de la tabla sin recargar
+                            row.classList.add('table-danger');
+                            setTimeout(() => row.remove(), 500);
+                        }
+                    })
+                    .catch(err => {
+                        Swal.fire('Error', 'No se pudo eliminar la transacción.', 'error');
+                    });
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
+
+
+
