@@ -39,8 +39,10 @@
             <td>{{ t.date }}</td>
             <td>{{ t.description }}</td>
            <td>
+    <a href="{% url 'edit_transaction' t.pk %}" class="btn btn-sm btn-warning me-2">Editar</a>
     <button class="btn btn-sm btn-danger delete-btn" data-id="{{ t.pk }}">Eliminar</button>
            </td>
+
         </tr>
     {% empty %}
         <tr><td colspan="5" class="text-center text-muted">No hay transacciones registradas.</td></tr>

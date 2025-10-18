@@ -16,3 +16,7 @@ table td {
   opacity: 0.3;
   transform: scale(0.98);
 }
+/* Color diferente para boton EDITAR */
+.btn-warning {
+  color: #fff;
+}

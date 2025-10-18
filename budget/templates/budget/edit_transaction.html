@@ -1,0 +1,27 @@
+{% extends 'budget/base.html' %}
+
+{% block title %}Editar transacción - BudgetBuddy{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm p-4">
+    <h4 class="mb-3">✏️ Editar Transacción</h4>
+
+    {% if messages %}
+      <div id="message-container">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary mt-3">Guardar cambios</button>
+        <a href="/" class="btn btn-secondary mt-3 ms-2">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

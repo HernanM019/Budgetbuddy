@@ -6,9 +6,19 @@ class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
         fields = ['type', 'category', 'amount', 'date', 'description']
+        labels = {
+            'type': 'Tipo',
+            'category': 'Categoría',
+            'amount': 'Monto',
+            'date': 'Fecha',
+            'description': 'Descripción',
+        }
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
-            'description': forms.Textarea(attrs={'rows': 2}),
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'rows': 2, 'class': 'form-control'}),
+            'category': forms.TextInput(attrs={'class': 'form-control'}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'type': forms.Select(attrs={'class': 'form-select'}),
         }
 
     def clean_date(self):

@@ -16,3 +16,10 @@
 - Added smooth fade-out animation for deleted table rows
 - Updated base template to load SweetAlert2 globally
 - Improved overall UX with interactive feedback on delete actions
+
+## [2025-10-18] BudgetBuddy v0.4
+- Added transaction editing feature (Update) to complete CRUD operations
+- New edit view and template for updating existing records
+- Integrated Bootstrap styling and message alerts for edit feedback
+- Updated transaction list with edit and delete actions
+- Improved UX and code organization for form handling
