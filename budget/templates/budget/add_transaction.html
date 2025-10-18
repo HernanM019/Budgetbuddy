@@ -1,26 +1,16 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Nueva transacción</title>
-    <style>
-        body { font-family: Arial; margin: 40px; }
-        form { display: flex; flex-direction: column; max-width: 400px; }
-        label { margin-top: 10px; }
-        input, select, textarea { margin-top: 5px; padding: 5px; }
-        button { margin-top: 20px; padding: 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #45a049; }
-    </style>
-</head>
-<body>
-    <h1>💰 Nueva Transacción</h1>
+{% extends 'budget/base.html' %}
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Guardar</button>
-    </form>
+{% block title %}Nueva transacción - BudgetBuddy{% endblock %}
 
-    <p><a href="/">← Volver al listado</a></p>
-</body>
-</html>
+{% block content %}
+    <div class="card shadow-sm p-4">
+        <h4 class="mb-3">💰 Nueva Transacción</h4>
+
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+            <a href="/" class="btn btn-secondary mt-3 ms-2">Cancelar</a>
+        </form>
+    </div>
+{% endblock %}
