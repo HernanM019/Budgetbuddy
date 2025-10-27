@@ -13,25 +13,34 @@
 </head>
 <body class="bg-light">
     <!-- NAVBAR -->
-    {% if user.is_authenticated %}
+{% if user.is_authenticated %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="/">💰 BudgetBuddy</a>
-        <div class="d-flex align-items-center">
-            <a class="btn btn-light btn-sm me-2" href="/add/">➕ Añadir registro</a>
-
-            {% if user.is_staff %}
-                <a class="btn btn-outline-light btn-sm me-2" href="/admin/">Admin</a>
-            {% endif %}
-
-            <form method="post" action="{% url 'logout' %}" class="d-inline">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesión</button>
-            </form>
-        </div>
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="/">💰 BudgetBuddy</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">Transacciones</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if '/categories' in request.path %}active{% endif %}" href="{% url 'category_list' %}">Categorías</a>
+        </li>
+      </ul>
+      <div class="d-flex">
+        <span class="navbar-text text-white me-3">👤 {{ user.username }}</span>
+        <a class="btn btn-light btn-sm" href="{% url 'logout' %}">Salir</a>
+      </div>
     </div>
+  </div>
+</nav>
+{% else %}
+<nav class="navbar navbar-dark bg-primary shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="/">💰 BudgetBuddy</a>
+  </div>
 </nav>
 {% endif %}
+
 
     {% if messages %}
 <div class="container mt-3">

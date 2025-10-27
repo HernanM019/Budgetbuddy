@@ -37,3 +37,10 @@
 - Mejoras de estilo y coherencia visual con Bootstrap  
 - Sistema de alertas visuales con mensajes de Django  
 - Ajustes menores en estructura de templates y rutas estáticas  
+
+## [2025-10-26] BudgetBuddy v0.5.1
+- Added full CRUD for user-specific Categories (linked to authenticated users)
+- Introduced CategoryForm and views for creation, edition, and deletion
+- Integrated Categories section into the main navigation bar
+- Enhanced UI consistency using Bootstrap components
+- Prepared system architecture for next phase (PostgreSQL migration)
