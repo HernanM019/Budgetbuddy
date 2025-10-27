@@ -1,0 +1,15 @@
+{% extends 'budget/base.html' %}
+{% block title %}Editar Categoría - BudgetBuddy{% endblock %}
+{% block content %}
+<div class="card shadow-sm p-4">
+    <h4 class="mb-3">✏️ Editar Categoría</h4>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-warning mt-3">Actualizar</button>
+        <a href="{% url 'category_list' %}" class="btn btn-secondary mt-3">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

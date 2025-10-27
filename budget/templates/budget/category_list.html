@@ -1,0 +1,32 @@
+{% extends 'budget/base.html' %}
+{% block title %}Categorías - BudgetBuddy{% endblock %}
+{% block content %}
+<div class="card shadow-sm p-4">
+    <h4 class="mb-3">🗂️ Mis Categorías</h4>
+    <a href="{% url 'add_category' %}" class="btn btn-primary mb-3">➕ Nueva Categoría</a>
+    {% if categories %}
+    <table class="table table-striped">
+        <thead>
+            <tr><th>Nombre</th><th>Descripción</th><th>Acciones</th></tr>
+        </thead>
+        <tbody>
+        {% for c in categories %}
+            <tr>
+                <td>{{ c.name }}</td>
+                <td>{{ c.description|default:"—" }}</td>
+                <td>
+                    <a href="{% url 'edit_category' c.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                    <form method="post" action="{% url 'delete_category' c.pk %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">No hay categorías registradas.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,16 +1,17 @@
 # Create your views here.
-
-from django.shortcuts import render
 from .models import Transaction
+from .models import Category
+from django.shortcuts import render
 from django.shortcuts import redirect
-from .forms import TransactionForm
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .forms import CustomUserCreationForm as UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth import logout
+from .forms import TransactionForm
+from .forms import CustomUserCreationForm as UserCreationForm
 from .forms import CustomUserCreationForm
+from .forms import CategoryForm
 
 #################################### MANEJO DE USUARIOS ##############################
 
@@ -107,3 +108,43 @@ def edit_transaction(request, pk):
         form = TransactionForm(instance=transaction)
 
     return render(request, 'budget/edit_transaction.html', {'form': form, 'transaction': transaction})
+
+#################################### CATEGORIES ##############################
+
+@login_required
+def category_list(request):
+    categories = Category.objects.filter(user=request.user)
+    return render(request, 'budget/category_list.html', {'categories': categories})
+
+@login_required
+def add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.user = request.user
+            category.save()
+            return redirect('category_list')
+    else:
+        form = CategoryForm()
+    return render(request, 'budget/add_category.html', {'form': form})
+
+@login_required
+def edit_category(request, pk):
+    category = get_object_or_404(Category, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            return redirect('category_list')
+    else:
+        form = CategoryForm(instance=category)
+    return render(request, 'budget/edit_category.html', {'form': form, 'category': category})
+
+@login_required
+def delete_category(request, pk):
+    category = get_object_or_404(Category, pk=pk, user=request.user)
+    if request.method == 'POST':
+        category.delete()
+        return redirect('category_list')
+    return render(request, 'budget/confirm_delete.html', {'object': category})

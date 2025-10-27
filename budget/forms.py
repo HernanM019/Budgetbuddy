@@ -1,5 +1,6 @@
 from django import forms
 from .models import Transaction
+from .models import Category
 from datetime import date
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -38,3 +39,13 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'password1', 'password2']
+
+#Formulario de categorias
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['name', 'description']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de la categoría'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Descripción opcional'}),
+        }
