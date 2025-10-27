@@ -58,20 +58,15 @@ def logout_view(request):
 #CRUD - ADD
 def add_transaction(request):
     if request.method == 'POST':
-        form = TransactionForm(request.POST)
+        form = TransactionForm(request.POST, user=request.user)
         if form.is_valid():
             transaction = form.save(commit=False)
             transaction.user = request.user
             transaction.save()
             messages.success(request, "Registro agregado correctamente.")
             return redirect('transaction_list')
-        else:
-            for field, error_list in form.errors.items():
-                for error in error_list:
-                    messages.error(request, f"{field.capitalize()}: {error}")
     else:
-        form = TransactionForm()
-
+        form = TransactionForm(user=request.user)
     return render(request, 'budget/add_transaction.html', {'form': form})
 
 
@@ -93,21 +88,17 @@ def delete_transaction(request, pk):
 
 #CRUD - EDIT
 def edit_transaction(request, pk):
-    transaction = get_object_or_404(Transaction, pk=pk)
+    transaction = get_object_or_404(Transaction, pk=pk, user=request.user)
     if request.method == 'POST':
-        form = TransactionForm(request.POST, instance=transaction)
+        form = TransactionForm(request.POST, instance=transaction, user=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, "Registro actualizado correctamente.")
             return redirect('transaction_list')
-        else:
-            for field, error_list in form.errors.items():
-                for error in error_list:
-                    messages.error(request, f"{field.capitalize()}: {error}")
     else:
-        form = TransactionForm(instance=transaction)
-
+        form = TransactionForm(instance=transaction, user=request.user)
     return render(request, 'budget/edit_transaction.html', {'form': form, 'transaction': transaction})
+
 
 #################################### CATEGORIES ##############################
 

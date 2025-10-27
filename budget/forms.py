@@ -19,10 +19,16 @@ class TransactionForm(forms.ModelForm):
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'description': forms.Textarea(attrs={'rows': 2, 'class': 'form-control'}),
-            'category': forms.TextInput(attrs={'class': 'form-control'}),
             'amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'type': forms.Select(attrs={'class': 'form-select'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['category'].queryset = Category.objects.filter(user=user)
+        self.fields['category'].widget.attrs.update({'class': 'form-select'})
 
     def clean_date(self):
         input_date = self.cleaned_data['date']
