@@ -1,50 +1,57 @@
 # BudgetBuddy
-An application to help myself in controlling my income and expenses.
-This project was born with the intention of learning and adapting.
 
-Initially was intended to be a "Vibe Coding" approach, for learning the basics of how an application works. I understood
-that reading theory is a slow process of learning, meanwhile using AI to draw an initial sketch might come as a huge 
-advantage to understand the skeleton and the very basics.
-This is my intent in entering onto this exciting world of WebApp development.
+BudgetBuddy is a personal finance tracker built with Django.
+
+It allows users to register expenses, incomes, and categories, providing a clear view of their financial balance.  
+This project represents my transition into Backend Development with Python and Django, focusing on clean code and modular architecture.
+
+## 🧠 Key Concepts
+- Django Models, Views, and Templates
+- ORM queries and data relationships
+- Modular project structure and environment setup
+- Future development: Django REST Framework and PostgreSQL integration
+
+## ⚙️ Tech Stack
+- Python 3.10
+- Django
+- SQLite (initial phase)
+- Git/GitHub for version control
+
+## 🚀 Planned Features
+- REST API endpoints using Django REST Framework
+- Authentication system
+- Docker setup for full-stack deployment
+
 
 # Roadmap
 ## 🧭 Roadmap de Estudio v2.0 — Python Developer | BudgetBuddy Alignment)
 
-> Este roadmap integra los requisitos más comunes de ofertas reales con las fases de desarrollo del proyecto **BudgetBuddy**, priorizando tecnologías backend, prácticas DevOps y automatización.
+This roadmap integrates the most common requirements found in real-world job offers with the development phases of BudgetBuddy, prioritizing backend technologies, DevOps practices, and automation.
 
-| Etapa | Tema | Estado | Prioridad |
-|:------|:------|:--------|:-----------|
-| **0** | 🔧 **Categorías personalizables** — Implementar CRUD completo de categorías en BudgetBuddy | 🟢 En desarrollo | 🔥 Alta |
-| **1** | 💾 **PostgreSQL** — Migrar DB, practicar consultas avanzadas (JOIN, índices, subqueries, views) | 🟢 Pendiente siguiente paso | 🔥 Alta |
-| **2** | 🌐 **Django REST Framework (DRF)** — Crear endpoints REST con serializers, viewsets y routers | ⚪ Por comenzar | 🔥 Alta |
-| **3** | 🐳 **Docker** — Configurar entorno reproducible (Django + PostgreSQL + Redis + Celery) | ⚪ Por comenzar | 🔥 Alta |
-| **4** | ⚙️ **Celery / Redis** — Implementar tareas asíncronas (notificaciones, actualización de balances) | ⚪ Por comenzar | 🟡 Media |
-| **5** | 🧪 **Testing (Pytest)** — Añadir tests unitarios e integrales + coverage reports | ⚪ Por comenzar | 🟡 Media |
-| **6** | 🔄 **CI/CD (GitHub Actions)** — Pipeline automatizado: test → build → deploy Docker | ⚪ Por comenzar | 🔥 Alta |
-| **7** | ☁️ **AWS Fundamentals** — Desplegar en EC2, usar S3 y RDS; enfoque en AWS Free Tier | ⚪ Por comenzar | 🔥 Alta |
-| **8** | 🧭 **Kubernetes (Intro)** — Conceptos: pods, deployments, services. Demo con Minikube | ⚪ Por comenzar | 🟡 Media |
-| **9** | 📊 **Performance & Logging** — Implementar logs estructurados (logging/Sentry) y optimizar SQL | ⚪ Por comenzar | 🟡 Media |
-| **10** | 🔄 **Data Pipelines (ETL)** — Introducción con Pandas / Airflow; automatizar importación de datos | ⚪ Por comenzar | 🔵 Baja |
-| **11** | 🗣️ **Inglés Técnico** — Lectura de docs, redacción de commits y README en inglés | 🟡 En curso permanente | 🔥 Alta |
-| **12** | 🤝 **Soft Skills & Metodologías Ágiles** — Comunicación clara, Scrum / Kanban, documentación | ⚪ Constante | 🟡 Media |
+| Stage  | Topic                                                                                             | Status         | Priority  |
+| :----- | :------------------------------------------------------------------------------------------------ | :------------- | :-------- |
+| **0**  | 🔧 **Custom Categories** — Implement full CRUD for categories in BudgetBuddy                      | 🟢 In progress | 🔥 High   |
+| **1**  | 💾 **PostgreSQL** — Migrate DB and practice advanced queries (JOINs, indexes, subqueries, views)  | 🟢 Next step   | 🔥 High   |
+| **2**  | 🌐 **Django REST Framework (DRF)** — Build REST endpoints with serializers, viewsets, and routers | ⚪ Not started  | 🔥 High   |
+| **3**  | 🐳 **Docker** — Configure a reproducible environment (Django + PostgreSQL + Redis + Celery)       | ⚪ Not started  | 🔥 High   |
+| **4**  | ⚙️ **Celery / Redis** — Implement async tasks (notifications, balance updates)                    | ⚪ Not started  | 🟡 Medium |
+| **5**  | 🧪 **Testing (Pytest)** — Add unit and integration tests + coverage reports                       | ⚪ Not started  | 🟡 Medium |
+| **6**  | 🔄 **CI/CD (GitHub Actions)** — Automated pipeline: test → build → Docker deploy                  | ⚪ Not started  | 🔥 High   |
+| **7**  | ☁️ **AWS Fundamentals** — Deploy on EC2, use S3 and RDS; focus on AWS Free Tier                   | ⚪ Not started  | 🔥 High   |
+| **8**  | 🧭 **Kubernetes (Intro)** — Concepts: pods, deployments, services. Demo using Minikube            | ⚪ Not started  | 🟡 Medium |
+| **9**  | 📊 **Performance & Logging** — Add structured logs (logging/Sentry) and SQL optimization          | ⚪ Not started  | 🟡 Medium |
+| **10** | 🔄 **Data Pipelines (ETL)** — Introduction with Pandas / Airflow; automate data imports           | ⚪ Not started  | 🔵 Low    |
+| **11** | 🗣️ **Technical English** — Reading documentation, writing commits and READMEs in English         | 🟡 Ongoing     | 🔥 High   |
+| **12** | 🤝 **Soft Skills & Agile Methodologies** — Clear communication, Scrum / Kanban, documentation     | ⚪ Continuous   | 🟡 Medium |
 
+
+### 🧩 My objective
+Build a solid foundation in backend development with Python, task automation, and cloud deployment — aligned with professional standards and applicable to real-world projects like BudgetBuddy.
+
+### 🚀 Final Goal
+Be capable of:
+- Designing scalable APIs using Django REST Framework.  
+- Managing infrastructure locally and in the cloud (Docker, AWS, Kubernetes). 
+- Implementing async tasks and data pipelines. 
+- Applying testing, CI/CD, and best coding practices.
 ---
-
-### 🧩 Objetivo general
-Construir una base sólida en desarrollo **backend con Python**, automatización de tareas y despliegue en la nube, alineada con estándares profesionales y aplicable a proyectos reales como **BudgetBuddy**.
-
-### 🚀 Meta final
-Ser capaz de:
-- Diseñar APIs escalables con Django REST Framework.  
-- Gestionar infraestructura local y en la nube (Docker, AWS, Kubernetes).  
-- Implementar tareas asíncronas y pipelines de datos.  
-- Aplicar testing, CI/CD y buenas prácticas de código.  
-- Comunicarte efectivamente en inglés técnico dentro de equipos distribuidos.
-
----
-
-> 📘 *Este roadmap evoluciona con cada nueva oferta laboral analizada. Se recomienda revisar y ajustar prioridades cada 2–3 meses.*
-
-Internal testings:
-
-to run django server, use: python manage.py runserver
