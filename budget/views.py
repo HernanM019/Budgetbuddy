@@ -12,6 +12,8 @@ from .forms import TransactionForm
 from .forms import CustomUserCreationForm as UserCreationForm
 from .forms import CustomUserCreationForm
 from .forms import CategoryForm
+from django.views.decorators.http import require_POST
+
 
 #################################### MANEJO DE USUARIOS ##############################
 
@@ -106,6 +108,23 @@ def edit_transaction(request, pk):
 def category_list(request):
     categories = Category.objects.filter(user=request.user)
     return render(request, 'budget/category_list.html', {'categories': categories})
+
+from django.http import JsonResponse
+
+@login_required
+@require_POST
+def ajax_add_category(request):
+    name = request.POST.get('name')
+    description = request.POST.get('description', '')
+
+    if not name:
+        return JsonResponse({'success': False, 'error': 'El nombre es obligatorio.'}, status=400)
+    if Category.objects.filter(user=request.user, name=name).exists():
+        return JsonResponse({'success': False, 'error': 'Ya existe una categoría con ese nombre.'}, status=400)
+
+    category = Category.objects.create(user=request.user, name=name, description=description)
+    return JsonResponse({'success': True, 'id': category.id, 'name': category.name})
+
 
 @login_required
 def add_category(request):

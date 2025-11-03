@@ -44,3 +44,10 @@
 - Integrated Categories section into the main navigation bar
 - Enhanced UI consistency using Bootstrap components
 - Prepared system architecture for next phase (PostgreSQL migration)
+
+## [2025-11-03] BudgetBuddy v0.5.2 — Inline Category Creation
+- Implemented dynamic category creation modal directly in “Add” and “Edit” transaction forms.
+- Users can now add categories without leaving the page.
+- Introduced AJAX-based workflow for instant category creation and dropdown refresh.
+- Unified design and behavior between new and edit transaction pages.
+- Improved user experience and reduced navigation friction.

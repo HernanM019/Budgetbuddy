@@ -3,39 +3,151 @@
 {% block title %}Nueva transacción - BudgetBuddy{% endblock %}
 
 {% block content %}
-    <div class="card shadow-sm p-4">
-        <h4 class="mb-3">💰 Nuevo Registro</h4>
+  <div class="card shadow-sm p-4">
+    <h4 class="mb-3">💰 Nuevo Registro</h4>
 
-        {% if messages %}
-          <div id="message-container">
-            {% for message in messages %}
-              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-            {% endfor %}
+    {% if messages %}
+      <div id="message-container">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
-        {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
 
-        <form method="post" class="needs-validation" novalidate>
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary mt-3">Guardar</button>
-            <a href="/" class="btn btn-secondary mt-3 ms-2">Cancelar</a>
+    <form method="post" class="needs-validation" novalidate>
+      {% csrf_token %}
+
+      <!-- Tipo -->
+      <div class="mb-3">
+        <label for="{{ form.type.id_for_label }}" class="form-label">Tipo:</label>
+        {{ form.type }}
+        {% if form.type.errors %}<div class="text-danger small">{{ form.type.errors }}</div>{% endif %}
+      </div>
+
+      <!-- Categoría + botón -->
+      <div class="mb-3">
+        <label for="{{ form.category.id_for_label }}" class="form-label">Categoría:</label>
+        <div class="input-group">
+          {{ form.category }}  <!-- select -->
+          <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+            ➕ Nueva
+          </button>
+        </div>
+        {% if form.category.errors %}<div class="text-danger small">{{ form.category.errors }}</div>{% endif %}
+      </div>
+
+      <!-- Monto -->
+      <div class="mb-3">
+        <label for="{{ form.amount.id_for_label }}" class="form-label">Monto:</label>
+        {{ form.amount }}
+        {% if form.amount.errors %}<div class="text-danger small">{{ form.amount.errors }}</div>{% endif %}
+      </div>
+
+      <!-- Fecha -->
+      <div class="mb-3">
+        <label for="{{ form.date.id_for_label }}" class="form-label">Fecha:</label>
+        {{ form.date }}
+        {% if form.date.errors %}<div class="text-danger small">{{ form.date.errors }}</div>{% endif %}
+      </div>
+
+      <!-- Descripción -->
+      <div class="mb-3">
+        <label for="{{ form.description.id_for_label }}" class="form-label">Descripción:</label>
+        {{ form.description }}
+        {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-2">Guardar</button>
+      <a href="{% url 'transaction_list' %}" class="btn btn-secondary mt-2 ms-2">Cancelar</a>
+    </form>
+  </div>
+
+  <!-- Modal: Nueva categoría -->
+  <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="categoryForm">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addCategoryModalLabel">Nueva categoría</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="categoryName" class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="categoryName" name="name" required>
+            </div>
+            <div class="mb-3">
+              <label for="categoryDescription" class="form-label">Descripción</label>
+              <textarea class="form-control" id="categoryDescription" name="description" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
         </form>
+      </div>
     </div>
+  </div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
+  // Auto-cierre de alerts
   document.addEventListener("DOMContentLoaded", function() {
-    const alerts = document.querySelectorAll('.alert');
-    alerts.forEach(alert => {
-      alert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.querySelectorAll('.alert').forEach(alert => {
       setTimeout(() => {
         const bsAlert = new bootstrap.Alert(alert);
         bsAlert.close();
       }, 4000);
+    });
+  });
+
+  // Alta de categoría vía AJAX y actualización del select
+  document.addEventListener("DOMContentLoaded", function () {
+    const categoryForm = document.getElementById("categoryForm");
+    const categorySelect = document.getElementById("id_category");
+
+    categoryForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(categoryForm);
+
+      fetch("{% url 'ajax_add_category' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+        },
+        body: formData
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          // Añadir opción al select y seleccionarla
+          const opt = document.createElement("option");
+          opt.value = data.id;
+          opt.textContent = data.name;
+          opt.selected = true;
+          categorySelect.appendChild(opt);
+
+          // Cerrar modal y limpiar
+          const modal = bootstrap.Modal.getInstance(document.getElementById("addCategoryModal"));
+          modal.hide();
+          categoryForm.reset();
+
+          if (window.Swal) {
+            Swal.fire({ icon: "success", title: "Categoría creada", text: `Se agregó "${data.name}".`, timer: 1800, showConfirmButton: false });
+          }
+        } else {
+          if (window.Swal) Swal.fire("Error", data.error || "No se pudo crear la categoría.", "error");
+        }
+      })
+      .catch(() => {
+        if (window.Swal) Swal.fire("Error", "No se pudo crear la categoría.", "error");
+      });
     });
   });
 </script>

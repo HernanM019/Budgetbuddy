@@ -24,7 +24,7 @@ This project represents my transition into Backend Development with Python and D
 
 
 # Roadmap
-## 🧭 Roadmap de Estudio v2.0 — Python Developer | BudgetBuddy Alignment)
+## 🧭 Roadmap for Studying v2.0 — Python Developer | BudgetBuddy Alignment)
 
 This roadmap integrates the most common requirements found in real-world job offers with the development phases of BudgetBuddy, prioritizing backend technologies, DevOps practices, and automation.
 
