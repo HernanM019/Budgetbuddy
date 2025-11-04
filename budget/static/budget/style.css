@@ -1,75 +1,140 @@
+/* ────────────────────────────────────────────────
+   COLORES Y TEXTO BÁSICO DEL SITIO
+────────────────────────────────────────────────── */
+
+/* Color de fondo principal del sitio: un gris muy claro para sensación limpia */
 body {
     background-color: #f8fafc;
 }
 
+/* Color oscuro para los títulos principales (h1 y h4) */
 h1, h4 {
     color: #2b2b2b;
 }
 
+/* Alinea verticalmente el contenido dentro de las celdas de tablas */
 table td {
     vertical-align: middle;
 }
 
-/* Efecto de eliminación suave para filas borradas */
+
+
+/* ────────────────────────────────────────────────
+   EFECTO VISUAL AL ELIMINAR UNA FILA (animación)
+────────────────────────────────────────────────── */
+
+/*
+Cuando una fila de la tabla recibe la clase .table-danger (por ejemplo,
+al eliminar una transacción), se aplica una animación de desvanecimiento
+y una ligera contracción para hacerlo visualmente más suave y natural.
+*/
 .table-danger {
-  transition: opacity 0.8s ease, transform 0.5s ease;
-  opacity: 0.3;
-  transform: scale(0.98);
+  transition: opacity 0.8s ease, transform 0.5s ease; /* Duración y tipo de transición */
+  opacity: 0.3;           /* Reduce la visibilidad de la fila */
+  transform: scale(0.98); /* Encoge un poco el tamaño (98%) */
 }
-/* Color diferente para boton EDITAR */
+
+
+
+/* ────────────────────────────────────────────────
+   PERSONALIZACIÓN DE BOTONES
+────────────────────────────────────────────────── */
+
+/*
+Bootstrap usa texto oscuro en los botones de advertencia (.btn-warning),
+pero en este caso lo cambiamos a blanco para mejorar el contraste.
+*/
 .btn-warning {
   color: #fff;
 }
 
-/* Centrar tarjetas de autenticación vertical y horizontalmente */
+
+
+/* ────────────────────────────────────────────────
+   AUTENTICACIÓN: CENTRADO DE TARJETAS
+────────────────────────────────────────────────── */
+
+/*
+Estas reglas centran vertical y horizontalmente las tarjetas
+de autenticación (login, registro) en la página.
+*/
 .auth-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 80vh;
+  display: flex;               /* Activa el modo flexbox */
+  justify-content: center;     /* Centra horizontalmente */
+  align-items: center;         /* Centra verticalmente */
+  height: 80vh;                /* Ocupa el 80% de la altura de la ventana */
 }
 
+/* Configura las tarjetas para que se adapten a distintos tamaños de pantalla */
 .auth-card {
-  max-width: 400px;
-  width: 100%;
+  max-width: 400px;            /* Ancho máximo de la tarjeta */
+  width: 100%;                 /* Se adapta al ancho disponible */
 }
 
 
-/* ======== Auth Pages ======== */
+
+/* ────────────────────────────────────────────────
+   PÁGINAS DE AUTENTICACIÓN DETALLADAS
+────────────────────────────────────────────────── */
+
+/*
+Aplica estilos generales solo a las páginas de autenticación
+(login y registro) mediante la clase body.auth-page.
+*/
 body.auth-page {
-  background-color: #f5f7fb;
+  background-color: #f5f7fb;   /* Fondo aún más claro para diferenciarlas del resto */
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 100vh;           /* Ocupa toda la altura visible */
 }
 
+/*
+Define el estilo visual de las tarjetas de autenticación:
+fondo blanco, bordes redondeados y sombra sutil.
+*/
 .auth-card {
   width: 100%;
   max-width: 420px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  padding: 2rem;
+  background: white;                   /* Fondo blanco */
+  border-radius: 16px;                 /* Bordes redondeados suaves */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Sombra ligera para efecto flotante */
+  padding: 2rem;                       /* Espaciado interno amplio */
 }
 
+/* Estilo del título dentro de las tarjetas (por ejemplo: “Iniciar sesión”) */
 .auth-title {
-  text-align: center;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  font-size: 1.4rem;
+  text-align: center;     /* Centrado horizontal */
+  font-weight: 600;       /* Negrita media */
+  margin-bottom: 1.5rem;  /* Separación inferior */
+  font-size: 1.4rem;      /* Tamaño moderado */
 }
 
+/* Ajusta el tamaño de íconos o elementos dentro del título */
 .auth-title span {
   font-size: 1.6rem;
-  margin-right: 8px;
+  margin-right: 8px;       /* Separación entre ícono y texto */
 }
 
+
+
+/* ────────────────────────────────────────────────
+   BOTONES PRINCIPALES (AZULES)
+────────────────────────────────────────────────── */
+
+/*
+Define el color principal de los botones (.btn-primary).
+El azul #1d4ed8 da un aspecto moderno y profesional.
+*/
 .btn-primary {
-  background-color: #1d4ed8;
-  border: none;
+  background-color: #1d4ed8;  /* Azul principal */
+  border: none;               /* Sin borde */
 }
 
+/*
+Cambia el color del botón cuando el cursor pasa por encima.
+El azul más oscuro (#1e40af) genera un efecto de interacción.
+*/
 .btn-primary:hover {
   background-color: #1e40af;
 }
