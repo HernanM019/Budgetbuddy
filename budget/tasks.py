@@ -7,10 +7,12 @@ Incluye:
 """
 from decimal import Decimal
 import logging
+import threading
 from celery import shared_task
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.db import close_old_connections
 
 from .models import Budget, SupportTicket
 from .repositories import SupportTicketRepository, TransactionRepository
@@ -124,15 +126,37 @@ def check_and_send_budget_alert_task(user_id: int, category_id: int, month: int,
     return sent
 
 
+def _run_task_in_background(task_func, *args):
+    """Ejecuta la tarea en un hilo en segundo plano cerrando conexiones de DB al finalizar."""
+    try:
+        close_old_connections()
+        task_func(*args)
+    except Exception as exc:
+        audit_logger.warning(f"Error ejecutando tarea en background '{getattr(task_func, 'name', task_func)}': {exc}")
+    finally:
+        close_old_connections()
+
+
 def dispatch_task_safely(task_func, *args):
     """
-    Despacha una tarea Celery a Redis (.delay) si el broker está disponible;
-    si se ejecuta en entorno local/demo sin Redis activo, hace fallback síncrono transparente.
+    Despacha una tarea Celery:
+    - En tests (`settings.TESTING`): ejecución síncrona inmediata para validar `mail.outbox`.
+    - En producción sin Redis (`CELERY_TASK_ALWAYS_EAGER=True`): ejecución asíncrona en un
+      hilo `daemon` para no bloquear jamás el worker HTTP de Gunicorn (evitando timeouts SMTP).
+    - Con broker Redis configurado: `.delay(*args)` con fallback a hilo en segundo plano.
     """
-    if getattr(settings, 'CELERY_TASK_ALWAYS_EAGER', False):
+    if getattr(settings, 'TESTING', False):
         return task_func(*args)
+
+    if getattr(settings, 'CELERY_TASK_ALWAYS_EAGER', False):
+        thread = threading.Thread(target=_run_task_in_background, args=(task_func, *args), daemon=True)
+        thread.start()
+        return None
+
     try:
         return task_func.delay(*args)
     except Exception as exc:
-        audit_logger.warning(f"Broker Redis no disponible ({exc}); ejecutando tarea '{task_func.name}' en modo síncrono.")
-        return task_func(*args)
+        audit_logger.warning(f"Broker Redis no disponible ({exc}); ejecutando tarea '{task_func.name}' en background thread.")
+        thread = threading.Thread(target=_run_task_in_background, args=(task_func, *args), daemon=True)
+        thread.start()
+        return None
