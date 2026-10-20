@@ -14,33 +14,33 @@
 - Integrated SweetAlert2 for modern confirmation popups
 - Enabled dynamic (AJAX-based) deletion of transactions without reloading the page
 - Added smooth fade-out animation for deleted table rows
-- Updated base template to load SweetAlert2 globally
-- Improved overall UX with interactive feedback on delete actions
 
 ## [2025-10-18] BudgetBuddy v0.4
 - Added transaction editing feature (Update) to complete CRUD operations
-- New edit view and template for updating existing records
-- Integrated Bootstrap styling and message alerts for edit feedback
-- Updated transaction list with edit and delete actions
-- Improved UX and code organization for form handling
 
 ## [2025-10-18] BudgetBuddy v0.5  
-- Implementado sistema completo de autenticación de usuarios  
-  (login, logout y registro desde la interfaz principal)  
-- Protección de vistas: solo usuarios autenticados pueden acceder a sus transacciones  
-- Asociación de registros financieros a cada usuario  
-- Nuevo mensaje de confirmación al cerrar sesión (“👋 Sesión cerrada correctamente”)  
-- Navbar dinámico:
-  - Solo visible tras iniciar sesión  
-  - Botón “Admin” visible solo para usuarios staff/superuser  
-  - Opción “Cerrar sesión” para todos los usuarios logueados  
-- Mejoras de estilo y coherencia visual con Bootstrap  
-- Sistema de alertas visuales con mensajes de Django  
-- Ajustes menores en estructura de templates y rutas estáticas  
+- Implementado sistema completo de autenticación de usuarios (login, logout y registro)
+- Asociación de registros financieros a cada usuario
 
 ## [2025-10-26] BudgetBuddy v0.5.1
 - Added full CRUD for user-specific Categories (linked to authenticated users)
-- Introduced CategoryForm and views for creation, edition, and deletion
-- Integrated Categories section into the main navigation bar
-- Enhanced UI consistency using Bootstrap components
-- Prepared system architecture for next phase (PostgreSQL migration)
+
+## [2026-10-20] BudgetBuddy v1.0.0 — Complete Architectural Rework & Multi-Tenant Suite
+- **Arquitectura en Capas Limpias**: Separación en Capa de Presentación (`views.py`, `forms.py`), Capa de Servicios (`services.py`) y Capa de Repositorio (`repositories.py`).
+- **Landing Page de Conversión (`/`)**: Nueva portada pública con redirección automática al Dashboard para usuarios autenticados.
+- **Seguridad y Aislamiento Multi-Usuario (IDOR Fix)**:
+  - Corregida vulnerabilidad IDOR en eliminación/edición de transacciones y agregados decoradores `@login_required`.
+  - Hashing de contraseñas actualizado a **Argon2id** y **BCrypt**.
+  - **Rate Limiting** contra fuerza bruta en `/login/` (HTTP 429 tras 5 intentos fallidos).
+- **Nuevos Módulos Financieros**: Cuentas (`Account`), Transferencias atómicas (`/transfer/`), Presupuestos Mensuales (`Budget`) y Balances Históricos.
+
+## [2026-10-20] BudgetBuddy v1.1.0 — Profile, Support Center, DRF API, Celery, CSV ETL & Cloud Staging
+- **Área Personal (`/profile/`)**: Actualización de nombre, apellido, correo único y cambio seguro de contraseña manteniendo la sesión activa (`update_session_auth_hash`).
+- **Centro de Sugerencias y Soporte (`/support/` y `/support/manage/`)**:
+  - Envío de sugerencias de producto y reportes técnicos tanto desde la Landing Page como para usuarios logueados.
+  - **Alertas automáticas por email a Administradores (`is_staff`/`is_superuser`)** con el motivo seleccionado en el `Subject` para filtrado por carpetas.
+  - Panel de moderación y respuesta para administradores en `/support/manage/`.
+- **ETL Práctico CSV (`/transactions/export/csv/` y `/transactions/import/csv/`)**: Exportación compatible con Excel e importación masiva de movimientos.
+- **Celery + Redis (`budget/tasks.py`)**: Envío asíncrono de alertas cuando un presupuesto mensual alcanza el 80% o 100%, con fallback síncrono automático.
+- **API RESTful (DRF + SimpleJWT + Swagger `/api/v1/docs/`)**: ViewSets y Serializers aislados por usuario.
+- **CI/CD & Cloud Staging**: Pipeline `.github/workflows/ci.yml`, `render.yaml`, `build.sh`, comando `ensure_admin`, soporte `DATABASE_URL` (Neon.tech), `WhiteNoise` y diseño 100% Mobile-Responsive.

@@ -1,0 +1,160 @@
+{% extends 'budget/base.html' %}
+
+{% block title %}Centro de Soporte y Sugerencias — BudgetBuddy{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h3 class="mb-1"><i class="bi bi-lightbulb text-warning me-2"></i>Centro de Sugerencias y Soporte</h3>
+        <p class="text-muted mb-0">
+            Comparte tus ideas para las próximas versiones de BudgetBuddy o repórtanos cualquier inconveniente técnico.
+        </p>
+    </div>
+    {% if user.is_staff or user.is_superuser %}
+    <a href="{% url 'admin_support_dashboard' %}" class="btn btn-primary">
+        <i class="bi bi-inbox-fill me-1"></i>Ir al Buzón de Administración
+    </a>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    <!-- FORMULARIO DE ENVÍO -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm p-4">
+            <h5 class="fw-bold mb-3">Enviar nueva Sugerencia o Reporte</h5>
+
+            <!-- Selector rápido visual -->
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <button type="button" class="btn btn-sm btn-outline-primary quick-type-btn" data-type="SUGGESTION">
+                    💡 Sugerencia / Idea
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger quick-type-btn" data-type="BUG">
+                    🐛 Reportar Falla
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-warning quick-type-btn" data-type="LOGIN_ISSUE">
+                    🔐 Problema de Acceso
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary quick-type-btn" data-type="OTHER">
+                    💬 Consulta General
+                </button>
+            </div>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">{{ form.ticket_type.label }}</label>
+                    {{ form.ticket_type }}
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">{{ form.contact_name.label }}</label>
+                        {{ form.contact_name }}
+                        {% if form.contact_name.errors %}
+                            <div class="text-danger small mt-1">{{ form.contact_name.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">{{ form.contact_email.label }}</label>
+                        {{ form.contact_email }}
+                        {% if form.contact_email.errors %}
+                            <div class="text-danger small mt-1">{{ form.contact_email.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">{{ form.subject.label }}</label>
+                    {{ form.subject }}
+                    {% if form.subject.errors %}
+                        <div class="text-danger small mt-1">{{ form.subject.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">{{ form.message.label }}</label>
+                    {{ form.message }}
+                    {% if form.message.errors %}
+                        <div class="text-danger small mt-1">{{ form.message.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2">
+                    <i class="bi bi-send me-1"></i>Enviar al Equipo de BudgetBuddy
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: SEGUIMIENTO O AYUDA RÁPIDA -->
+    <div class="col-lg-6">
+        {% if user.is_authenticated %}
+        <div class="card shadow-sm p-4 h-100">
+            <h5 class="fw-bold mb-3"><i class="bi bi-clock-history text-primary me-2"></i>Mis Sugerencias y Reportes Enviados</h5>
+            {% if my_tickets %}
+            <div class="d-flex flex-column gap-3">
+                {% for t in my_tickets %}
+                <div class="p-3 rounded-3 border bg-light">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <div>
+                            <span class="badge bg-white text-dark border me-1">{{ t.get_ticket_type_display }}</span>
+                            <strong>{{ t.subject }}</strong>
+                        </div>
+                        <span class="badge {% if t.status == 'RESOLVED' %}bg-success{% elif t.status == 'PLANNED' %}bg-info text-dark{% elif t.status == 'IN_REVIEW' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                            {{ t.get_status_display }}
+                        </span>
+                    </div>
+                    <p class="small text-muted mb-2">{{ t.message }}</p>
+                    <div class="text-muted" style="font-size: 0.78rem;">Enviado el {{ t.created_at|date:"d/m/Y H:i" }}</div>
+                    {% if t.admin_response %}
+                    <div class="mt-2 p-2 rounded bg-white border-start border-4 border-primary small">
+                        <strong class="text-primary"><i class="bi bi-reply-fill me-1"></i>Respuesta del Administrador:</strong>
+                        <div>{{ t.admin_response }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-inbox display-5 d-block mb-2"></i>
+                <p class="mb-0">Todavía no enviaste sugerencias ni tickets de soporte desde tu cuenta.</p>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="card shadow-sm p-4 h-100">
+            <h5 class="fw-bold mb-3"><i class="bi bi-question-circle text-primary me-2"></i>Preguntas Frecuentes de Acceso</h5>
+            <div class="d-flex flex-column gap-3 small">
+                <div class="p-3 rounded-3 bg-light">
+                    <div class="fw-bold mb-1">🔒 Olvidé mi contraseña</div>
+                    <p class="text-muted mb-2">Si tenías un correo registrado en tu cuenta, puedes solicitar un enlace de restablecimiento automático:</p>
+                    <a href="{% url 'password_reset' %}" class="btn btn-sm btn-outline-primary">Recuperar contraseña</a>
+                </div>
+                <div class="p-3 rounded-3 bg-light">
+                    <div class="fw-bold mb-1">⏳ Cuenta bloqueada por intentos fallidos</div>
+                    <p class="text-muted mb-0">Por seguridad contra fuerza bruta, tras 5 intentos fallidos el acceso se pausa durante 5 minutos. Luego podrás volver a intentarlo.</p>
+                </div>
+                <div class="p-3 rounded-3 bg-light">
+                    <div class="fw-bold mb-1">💡 ¿Tienes una idea para BudgetBuddy?</div>
+                    <p class="text-muted mb-0">Selecciona <strong>"Sugerencia / Nueva Idea"</strong> en el formulario para que el administrador pueda evaluarla e incluirla en el roadmap.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const typeSelect = document.getElementById('id_ticket_type');
+    const quickBtns = document.querySelectorAll('.quick-type-btn');
+    quickBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (typeSelect) {
+                typeSelect.value = this.getAttribute('data-type');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

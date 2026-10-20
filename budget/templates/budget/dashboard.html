@@ -1,0 +1,218 @@
+{% extends 'budget/base.html' %}
+
+{% block title %}Dashboard — BudgetBuddy{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h2 class="mb-1">Hola, {{ user.username }} 👋</h2>
+        <p class="text-muted mb-0">Resumen financiero y estado de tus cuentas ({{ current_month|stringformat:"02d" }}/{{ current_year }})</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a href="{% url 'add_transaction' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>Nueva Transacción
+        </a>
+        <a href="{% url 'transfer_funds' %}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left-right me-1"></i>Transferir entre Cuentas
+        </a>
+        <a href="{% url 'add_budget' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-pie-chart me-1"></i>Nuevo Presupuesto
+        </a>
+    </div>
+</div>
+
+<!-- KPI CARDS -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm kpi-card h-100 border-start border-4 border-primary">
+            <div class="text-muted small fw-semibold text-uppercase">Patrimonio Total (Cuentas)</div>
+            <div class="fs-3 fw-bold {% if total_net_worth >= 0 %}text-primary{% else %}text-danger{% endif %} mt-1">
+                ${{ total_net_worth }}
+            </div>
+            <div class="small text-muted mt-1">Saldo consolidado activo</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm kpi-card h-100 border-start border-4 border-success">
+            <div class="text-muted small fw-semibold text-uppercase">Ingresos del Mes</div>
+            <div class="fs-3 fw-bold text-success mt-1">
+                +${{ monthly_totals.total_income }}
+            </div>
+            <div class="small text-muted mt-1">Histórico: ${{ overall_totals.total_income }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm kpi-card h-100 border-start border-4 border-danger">
+            <div class="text-muted small fw-semibold text-uppercase">Gastos del Mes</div>
+            <div class="fs-3 fw-bold text-danger mt-1">
+                -${{ monthly_totals.total_expense }}
+            </div>
+            <div class="small text-muted mt-1">Histórico: ${{ overall_totals.total_expense }}</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 shadow-sm kpi-card h-100 border-start border-4 border-info">
+            <div class="text-muted small fw-semibold text-uppercase">Balance Neto del Mes</div>
+            <div class="fs-3 fw-bold {% if monthly_totals.balance >= 0 %}text-success{% else %}text-danger{% endif %} mt-1">
+                ${{ monthly_totals.balance }}
+            </div>
+            <div class="small text-muted mt-1">Histórico: ${{ overall_totals.balance }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- MIS CUENTAS -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0"><i class="bi bi-wallet2 text-primary me-2"></i>Mis Cuentas</h5>
+                <a href="{% url 'account_list' %}" class="btn btn-sm btn-light">Gestionar</a>
+            </div>
+            {% if accounts_data %}
+            <div class="list-group list-group-flush">
+                {% for item in accounts_data %}
+                <div class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">{{ item.account.name }}</div>
+                        <span class="badge bg-light text-secondary border">{{ item.account.get_account_type_display }} · {{ item.account.currency }}</span>
+                    </div>
+                    <div class="fs-5 fw-bold {% if item.balance >= 0 %}text-dark{% else %}text-danger{% endif %}">
+                        ${{ item.balance }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted small mb-0">No tienes cuentas activas registradas.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- PRESUPUESTOS DEL MES -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0"><i class="bi bi-pie-chart text-primary me-2"></i>Presupuestos Mensuales</h5>
+                <a href="{% url 'budget_list' %}" class="btn btn-sm btn-light">Ver todos</a>
+            </div>
+            {% if budgets_progress %}
+                {% for item in budgets_progress %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center small mb-1">
+                        <span class="fw-semibold">
+                            <span class="category-dot" style="background-color: {{ item.budget.category.color }};"></span>
+                            {{ item.budget.category.name }}
+                        </span>
+                        <span>
+                            <strong>${{ item.spent }}</strong> / ${{ item.budget.amount }}
+                            <span class="badge bg-{{ item.status }}-subtle text-{{ item.status }} ms-1">{{ item.percentage }}% ({{ item.status_label }})</span>
+                        </span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-{{ item.status }}" role="progressbar" style="width: {{ item.bar_width }}%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-4 text-muted">
+                    <p class="mb-2">Aún no definiste presupuestos para este mes.</p>
+                    <a href="{% url 'add_budget' %}" class="btn btn-sm btn-outline-primary">Crear mi primer presupuesto</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- ÚLTIMOS MOVIMIENTOS -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0"><i class="bi bi-clock-history text-primary me-2"></i>Últimos Movimientos</h5>
+                <a href="{% url 'transaction_list' %}" class="btn btn-sm btn-light">Ver historial completo</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Cuenta / Categoría</th>
+                            <th>Fecha</th>
+                            <th class="text-end">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in recent_transactions %}
+                        <tr>
+                            <td>
+                                {% if t.type == 'INCOME' %}
+                                    <span class="badge bg-success-subtle text-success">Ingreso</span>
+                                {% elif t.type == 'EXPENSE' %}
+                                    <span class="badge bg-danger-subtle text-danger">Egreso</span>
+                                {% else %}
+                                    <span class="badge bg-info-subtle text-info">Transferencia</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="fw-semibold">
+                                    {% if t.type == 'TRANSFER' %}
+                                        {{ t.account.name }} <i class="bi bi-arrow-right mx-1"></i> {{ t.destination_account.name }}
+                                    {% else %}
+                                        {{ t.category.name|default:"Sin categoría" }}
+                                    {% endif %}
+                                </div>
+                                <div class="small text-muted">{{ t.account.name|default:"" }} {% if t.description %}· {{ t.description|truncatechars:35 }}{% endif %}</div>
+                            </td>
+                            <td class="small text-muted">{{ t.date }}</td>
+                            <td class="text-end fw-bold {% if t.type == 'INCOME' %}text-success{% elif t.type == 'EXPENSE' %}text-danger{% else %}text-primary{% endif %}">
+                                {% if t.type == 'INCOME' %}+{% elif t.type == 'EXPENSE' %}-{% endif %}${{ t.amount }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-3">No hay transacciones registradas aún.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- BALANCE HISTÓRICO MENSUAL -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm p-4 h-100">
+            <h5 class="mb-3"><i class="bi bi-calendar3 text-primary me-2"></i>Balance Histórico Mensual</h5>
+            {% if monthly_history %}
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Período</th>
+                            <th class="text-end">Ingresos</th>
+                            <th class="text-end">Gastos</th>
+                            <th class="text-end">Neto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in monthly_history %}
+                        <tr>
+                            <td class="fw-semibold">{{ row.month_date|date:"m/Y" }}</td>
+                            <td class="text-end text-success">+${{ row.income }}</td>
+                            <td class="text-end text-danger">-${{ row.expense }}</td>
+                            <td class="text-end fw-bold {% if row.net >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                ${{ row.net }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted small mb-0">Registra tus primeros movimientos para visualizar la evolución histórica mensual.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

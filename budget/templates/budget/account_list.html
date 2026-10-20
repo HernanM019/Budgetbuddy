@@ -1,0 +1,59 @@
+{% extends 'budget/base.html' %}
+
+{% block title %}Mis Cuentas — BudgetBuddy{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1">🏦 Mis Cuentas Financieras</h3>
+        <p class="text-muted mb-0">Gestiona tus cuentas bancarias, efectivo, billeteras virtuales y ahorros.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'transfer_funds' %}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left-right me-1"></i>Transferir
+        </a>
+        <a href="{% url 'add_account' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>Nueva Cuenta
+        </a>
+    </div>
+</div>
+
+<div class="row g-3">
+    {% for item in accounts_data %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm p-4 h-100 kpi-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <h5 class="mb-1">{{ item.account.name }}</h5>
+                    <span class="badge bg-light text-dark border">
+                        {{ item.account.get_account_type_display }} · {{ item.account.currency }}
+                    </span>
+                </div>
+                {% if item.account.is_active %}
+                    <span class="badge bg-success-subtle text-success">Activa</span>
+                {% else %}
+                    <span class="badge bg-secondary-subtle text-secondary">Inactiva</span>
+                {% endif %}
+            </div>
+            <div class="my-3">
+                <div class="text-muted small">Saldo Actual</div>
+                <div class="fs-3 fw-bold {% if item.balance >= 0 %}text-primary{% else %}text-danger{% endif %}">
+                    ${{ item.balance }}
+                </div>
+                <div class="small text-muted">Saldo inicial: ${{ item.account.initial_balance }}</div>
+            </div>
+            <div class="d-flex gap-2 mt-auto pt-2 border-top">
+                <a href="{% url 'edit_account' item.account.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                <a href="{% url 'delete_account' item.account.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card shadow-sm p-4 text-center text-muted">
+            No tienes cuentas registradas.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

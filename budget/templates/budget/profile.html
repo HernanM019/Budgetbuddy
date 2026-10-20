@@ -1,0 +1,143 @@
+{% extends 'budget/base.html' %}
+
+{% block title %}Mi Área Personal — BudgetBuddy{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h3 class="mb-1"><i class="bi bi-person-gear text-primary me-2"></i>Mi Área Personal</h3>
+        <p class="text-muted mb-0">Gestiona tu información de contacto, correo electrónico y seguridad de tu contraseña.</p>
+    </div>
+    <a href="{% url 'support_center' %}" class="btn btn-outline-primary">
+        <i class="bi bi-lightbulb me-1"></i>Enviar Sugerencia o Soporte
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- COLUMNA IZQUIERDA: IDENTIDAD Y DATOS PERSONALES -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm p-4 mb-4">
+            <div class="d-flex align-items-center gap-3 pb-3 mb-3 border-bottom">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 60px; height: 60px;">
+                    {{ user.username|slice:":1"|upper }}
+                </div>
+                <div>
+                    <h5 class="mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                    <div class="text-muted small">@{{ user.username }} · Miembro desde {{ user.date_joined|date:"d/m/Y" }}</div>
+                    <div class="mt-2 d-flex flex-wrap gap-2">
+                        <span class="badge bg-success-subtle text-success">
+                            <i class="bi bi-shield-lock-fill me-1"></i>Hash {{ hash_algorithm }}
+                        </span>
+                        <span class="badge bg-primary-subtle text-primary">
+                            {{ accounts_count }} Cuentas
+                        </span>
+                        <span class="badge bg-secondary-subtle text-secondary">
+                            {{ categories_count }} Categorías · {{ transactions_count }} Movimientos
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="fw-bold mb-3"><i class="bi bi-envelope-at text-primary me-2"></i>Información de Cuenta</h5>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_profile">
+
+                <div class="mb-3">
+                    <label class="form-label small text-muted fw-semibold">Nombre de usuario (ID de acceso)</label>
+                    <input type="text" class="form-control bg-light" value="{{ user.username }}" disabled>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">{{ profile_form.first_name.label }}</label>
+                        {{ profile_form.first_name }}
+                        {% if profile_form.first_name.errors %}
+                            <div class="text-danger small mt-1">{{ profile_form.first_name.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">{{ profile_form.last_name.label }}</label>
+                        {{ profile_form.last_name }}
+                        {% if profile_form.last_name.errors %}
+                            <div class="text-danger small mt-1">{{ profile_form.last_name.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">{{ profile_form.email.label }}</label>
+                    {{ profile_form.email }}
+                    <div class="form-text small">Fundamental para recuperar el acceso a tu cuenta y recibir respuestas de soporte.</div>
+                    {% if profile_form.email.errors %}
+                        <div class="text-danger small mt-1">{{ profile_form.email.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check2-circle me-1"></i>Guardar Información Personal
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: CAMBIO DE CONTRASEÑA Y MIS TICKETS -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm p-4 mb-4">
+            <h5 class="fw-bold mb-2"><i class="bi bi-key-fill text-warning me-2"></i>Seguridad y Cambio de Contraseña</h5>
+            <p class="text-muted small mb-3">
+                Tu nueva contraseña se cifrará con <strong>Argon2id</strong> y tu sesión actual permanecerá activa tras el cambio.
+            </p>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="action" value="change_password">
+
+                {% for field in password_form %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-dark">
+                    <i class="bi bi-shield-check me-1"></i>Actualizar Contraseña
+                </button>
+            </form>
+        </div>
+
+        <!-- RESUMEN DE SUGERENCIAS / TICKETS DEL USUARIO -->
+        <div class="card shadow-sm p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0"><i class="bi bi-chat-left-text text-primary me-2"></i>Mis Sugerencias y Tickets Recientes</h6>
+                <a href="{% url 'support_center' %}" class="small text-decoration-none">Ver todos</a>
+            </div>
+            {% if user_tickets %}
+                <div class="list-group list-group-flush">
+                    {% for t in user_tickets %}
+                    <div class="list-group-item px-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-semibold small">{{ t.subject }}</span>
+                            <span class="badge {% if t.status == 'RESOLVED' %}bg-success-subtle text-success{% elif t.status == 'PLANNED' %}bg-info-subtle text-info{% elif t.status == 'IN_REVIEW' %}bg-warning-subtle text-warning{% else %}bg-secondary-subtle text-secondary{% endif %}">
+                                {{ t.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="text-muted small">{{ t.get_ticket_type_display }} · {{ t.created_at|date:"d/m/Y H:i" }}</div>
+                        {% if t.admin_response %}
+                            <div class="mt-2 p-2 rounded bg-light border-start border-3 border-primary small">
+                                <strong>Respuesta Admin:</strong> {{ t.admin_response }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted small mb-0">Aún no has enviado sugerencias ni reportes de soporte.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

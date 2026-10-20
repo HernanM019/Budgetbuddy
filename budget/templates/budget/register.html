@@ -1,41 +1,37 @@
 {% extends 'budget/base.html' %}
 
-{% block title %}Registrarse - BudgetBuddy{% endblock %}
+{% block title %}Crear Cuenta — BudgetBuddy{% endblock %}
 
 {% block content %}
 <div class="auth-container">
-  <div class="card shadow-sm p-4 auth-card">
-    <h4 class="mb-3 text-center">📝 Crear una cuenta</h4>
-
-    {% if messages %}
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-      {% endfor %}
-    {% endif %}
+  <div class="card shadow-sm auth-card">
+    <h4 class="mb-2 text-center">📝 Crear una cuenta</h4>
+    <p class="text-muted text-center small mb-4">Tus finanzas personales 100% separadas y protegidas</p>
 
     <form method="post" novalidate>
       {% csrf_token %}
       <div class="mb-3">
-        <label for="id_username" class="form-label">Nombre de usuario</label>
+        <label for="id_username" class="form-label fw-semibold">Nombre de usuario</label>
         {{ form.username }}
       </div>
       <div class="mb-3">
-        <label for="id_password1" class="form-label">Contraseña</label>
+        <label for="id_email" class="form-label fw-semibold">Correo electrónico (opcional)</label>
+        {{ form.email }}
+      </div>
+      <div class="mb-3">
+        <label for="id_password1" class="form-label fw-semibold">Contraseña</label>
         {{ form.password1 }}
       </div>
       <div class="mb-3">
-        <label for="id_password2" class="form-label">Repetir contraseña</label>
+        <label for="id_password2" class="form-label fw-semibold">Repetir contraseña</label>
         {{ form.password2 }}
       </div>
 
-      <button type="submit" class="btn btn-success w-100">Registrarme</button>
+      <button type="submit" class="btn btn-success w-100 py-2 fw-semibold">Registrarme</button>
     </form>
 
-    <p class="text-center mt-3">
-      ¿Ya tenés una cuenta? <a href="{% url 'login' %}">Iniciá sesión</a>
+    <p class="text-center mt-4 mb-0 small">
+      ¿Ya tenés una cuenta? <a href="{% url 'login' %}" class="fw-semibold">Iniciá sesión</a>
     </p>
   </div>
 </div>

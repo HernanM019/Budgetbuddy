@@ -1,0 +1,24 @@
+{% extends 'budget/base.html' %}
+
+{% block title %}Transferir entre Cuentas — BudgetBuddy{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-sm p-4">
+            <h4 class="mb-2"><i class="bi bi-arrow-left-right text-primary me-2"></i>Transferencia entre Cuentas</h4>
+            <p class="text-muted small mb-3">
+                Mueve fondos de forma atómica entre dos de tus cuentas activas.
+            </p>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary">Realizar Transferencia</button>
+                    <a href="{% url 'transaction_list' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

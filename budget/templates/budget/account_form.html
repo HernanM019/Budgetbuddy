@@ -1,0 +1,21 @@
+{% extends 'budget/base.html' %}
+
+{% block title %}{% if is_edit %}Editar Cuenta{% else %}Nueva Cuenta{% endif %} — BudgetBuddy{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-sm p-4">
+            <h4 class="mb-3">{% if is_edit %}✏️ Editar Cuenta{% else %}🏦 Nueva Cuenta Financiera{% endif %}</h4>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a href="{% url 'account_list' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

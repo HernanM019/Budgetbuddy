@@ -1,0 +1,63 @@
+{% extends 'budget/base.html' %}
+
+{% block title %}Presupuestos Mensuales — BudgetBuddy{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1">📊 Presupuestos Mensuales</h3>
+        <p class="text-muted mb-0">Controla tus límites de gasto por categoría en tiempo real.</p>
+    </div>
+    <a href="{% url 'add_budget' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Nuevo Presupuesto
+    </a>
+</div>
+
+<div class="row g-3">
+    {% for item in budgets_progress %}
+    <div class="col-md-6">
+        <div class="card shadow-sm p-4 h-100 kpi-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <h5 class="mb-1">
+                        <span class="category-dot" style="background-color: {{ item.budget.category.color }};"></span>
+                        {{ item.budget.category.name }}
+                    </h5>
+                    <span class="text-muted small">Período: {{ item.budget.month|stringformat:"02d" }}/{{ item.budget.year }}</span>
+                </div>
+                <span class="badge bg-{{ item.status }}-subtle text-{{ item.status }} px-2 py-1">
+                    {{ item.status_label }} ({{ item.percentage }}%)
+                </span>
+            </div>
+
+            <div class="my-3">
+                <div class="d-flex justify-content-between small mb-1">
+                    <span>Consumido: <strong>${{ item.spent }}</strong></span>
+                    <span>Límite: <strong>${{ item.budget.amount }}</strong></span>
+                </div>
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-{{ item.status }}" role="progressbar" style="width: {{ item.bar_width }}%"></div>
+                </div>
+                <div class="small text-muted mt-2">
+                    Disponible: <strong class="{% if item.remaining >= 0 %}text-success{% else %}text-danger{% endif %}">${{ item.remaining }}</strong>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-auto pt-2 border-top">
+                <a href="{% url 'edit_budget' item.budget.pk %}" class="btn btn-sm btn-warning">Editar</a>
+                <a href="{% url 'delete_budget' item.budget.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card shadow-sm p-5 text-center text-muted">
+            <p class="mb-3">No tienes presupuestos configurados para este período.</p>
+            <div>
+                <a href="{% url 'add_budget' %}" class="btn btn-primary">Configurar mi primer presupuesto</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

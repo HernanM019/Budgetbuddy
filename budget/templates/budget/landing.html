@@ -1,0 +1,267 @@
+{% extends 'budget/base.html' %}
+
+{% block title %}BudgetBuddy — Toma el control total de tus finanzas personales{% endblock %}
+
+{% block content %}
+<!-- HERO SECTION -->
+<section class="hero-section shadow-lg mb-5">
+    <div class="row align-items-center g-5">
+        <div class="col-lg-7">
+            <span class="badge bg-primary bg-opacity-25 text-info border border-info border-opacity-25 fw-semibold px-3 py-2 rounded-pill mb-3">
+                ✨ Plataforma Multi-Cuenta & Multi-Usuario v1.0
+            </span>
+            <h1 class="display-5 fw-bold mb-3">
+                Tus finanzas personales con claridad, orden y privacidad absoluta.
+            </h1>
+            <p class="lead text-white-50 mb-4" style="max-width: 600px;">
+                Centraliza tus cuentas bancarias, efectivo y billeteras virtuales. Registra movimientos en segundos, define presupuestos mensuales inteligentes y mantén tu patrimonio 100% aislado en tu propia cuenta.
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+                <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-4 py-3">
+                    Crear mi cuenta gratis <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                    Iniciar sesión
+                </a>
+            </div>
+            <div class="d-flex flex-wrap gap-4 mt-4 pt-2 text-white-50 small">
+                <span><i class="bi bi-check2-circle text-success me-1"></i>Sin costos ocultos</span>
+                <span><i class="bi bi-check2-circle text-success me-1"></i>7 categorías listas al registrarte</span>
+                <span><i class="bi bi-check2-circle text-success me-1"></i>Cifrado Argon2id</span>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="hero-preview-card text-dark p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="fw-bold text-secondary small text-uppercase">Vista Previa del Dashboard</span>
+                    <span class="badge bg-success-subtle text-success rounded-pill px-3">
+                        <i class="bi bi-lock-fill me-1"></i>Espacio Aislado
+                    </span>
+                </div>
+                <div class="p-3 rounded-4 bg-light border mb-3">
+                    <div class="text-muted small fw-medium">Patrimonio Neto Consolidado</div>
+                    <div class="fs-2 fw-bold text-primary my-1">$4,850.00</div>
+                    <div class="d-flex gap-3 mt-2 small fw-medium">
+                        <span class="text-success"><i class="bi bi-arrow-up-circle-fill me-1"></i>+$2,400.00 Ingresos</span>
+                        <span class="text-danger"><i class="bi bi-arrow-down-circle-fill me-1"></i>-$950.00 Gastos</span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="fw-semibold">🍔 Alimentación</span>
+                        <span class="text-muted">$310 / $500 <span class="badge bg-success-subtle text-success ms-1">62%</span></span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 62%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="fw-semibold">🏠 Vivienda y Servicios</span>
+                        <span class="text-muted">$640 / $750 <span class="badge bg-warning-subtle text-warning ms-1">85%</span></span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 85%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES SECTION -->
+<section id="features" class="py-4 mb-5">
+    <div class="text-center mb-5">
+        <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 mb-2">Módulos Integrados</span>
+        <h2 class="fw-bold">Todo lo que necesitas para dominar tu economía</h2>
+        <p class="text-muted">Diseñado con una interfaz limpia y cómoda a la vista para tu uso diario.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 p-4 kpi-card">
+                <div class="feature-icon-box bg-primary-subtle text-primary mb-3">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+                <h5 class="fw-bold">Múltiples Cuentas</h5>
+                <p class="text-muted small mb-0">
+                    Administra tu efectivo, cuentas bancarias, billeteras virtuales y ahorros por separado, con transferencias atómicas entre ellas.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 p-4 kpi-card">
+                <div class="feature-icon-box bg-success-subtle text-success mb-3">
+                    <i class="bi bi-pie-chart-fill"></i>
+                </div>
+                <h5 class="fw-bold">Presupuestos Mensuales</h5>
+                <p class="text-muted small mb-0">
+                    Define límites de gasto por categoría y recibe alertas visuales automáticas (Saludable, En alerta o Excedido) en tiempo real.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 p-4 kpi-card">
+                <div class="feature-icon-box bg-warning-subtle text-warning mb-3">
+                    <i class="bi bi-tags-fill"></i>
+                </div>
+                <h5 class="fw-bold">Categorías a Medida</h5>
+                <p class="text-muted small mb-0">
+                    Personaliza tus categorías con colores identificadores. Al registrarte, configuramos tus categorías base automáticamente.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 p-4 kpi-card">
+                <div class="feature-icon-box bg-info-subtle text-info mb-3">
+                    <i class="bi bi-bar-chart-line-fill"></i>
+                </div>
+                <h5 class="fw-bold">Balances Históricos</h5>
+                <p class="text-muted small mb-0">
+                    Analiza la evolución mes a mes de tus ingresos, egresos y ahorro neto con indicadores consolidados.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS SECTION -->
+<section id="how-it-works" class="py-4 mb-5">
+    <div class="text-center mb-4">
+        <h3 class="fw-bold">Comienza en 3 simples pasos</h3>
+        <p class="text-muted">Sin configuraciones tediosas: tu cuenta nace lista para operar.</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card p-4 h-100 text-center kpi-card">
+                <div class="mx-auto mb-3 rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">1</div>
+                <h5 class="fw-bold">Crea tu cuenta</h5>
+                <p class="text-muted small mb-0">Regístrate en segundos. El sistema aprovisiona automáticamente tu Cuenta Principal y 7 categorías iniciales.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 h-100 text-center kpi-card">
+                <div class="mx-auto mb-3 rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">2</div>
+                <h5 class="fw-bold">Registra o transfiere</h5>
+                <p class="text-muted small mb-0">Anota tus ingresos y gastos diarios o mueve dinero entre tus cuentas bancarias y billeteras virtuales.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 h-100 text-center kpi-card">
+                <div class="mx-auto mb-3 rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">3</div>
+                <h5 class="fw-bold">Controla tus metas</h5>
+                <p class="text-muted small mb-0">Revisa en tu Dashboard cuánto llevas consumido de cada presupuesto mensual y tu balance histórico.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECURITY & DATA SEGREGATION SECTION -->
+<section id="security" class="card p-4 p-md-5 mb-5">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+            <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 mb-2">Seguridad y Privacidad</span>
+            <h3 class="fw-bold mb-3">Aislamiento Multi-Usuario Estricto</h3>
+            <p class="text-muted mb-3">
+                Cada cuenta en BudgetBuddy opera en un entorno lógico completamente aislado. Tus transacciones, cuentas bancarias, categorías y presupuestos están vinculados exclusivamente a tu usuario y protegidos en todas las capas de la aplicación.
+            </p>
+            <div class="row g-3 small">
+                <div class="col-sm-6">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i><strong>Hashing Argon2id / BCrypt</strong> para credenciales
+                </div>
+                <div class="col-sm-6">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i><strong>Segregación de Datos</strong> en capa de repositorio
+                </div>
+                <div class="col-sm-6">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i><strong>Protección Brute-Force</strong> con Rate Limiting
+                </div>
+                <div class="col-sm-6">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i><strong>Sesiones HttpOnly & CSRF</strong> protegidas
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 text-center">
+            <div class="p-4 rounded-4 bg-light border">
+                <i class="bi bi-shield-lock-fill display-4 text-primary mb-3 d-block"></i>
+                <h5 class="fw-bold">¿Listo para probarlo?</h5>
+                <p class="text-muted small mb-3">Accede ahora y explora el nuevo Dashboard financiero.</p>
+                <a href="{% url 'register' %}" class="btn btn-primary w-100 py-2">
+                    Crear mi cuenta gratis
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SUPPORT, CONTACT & SUGGESTIONS SECTION -->
+<section id="support" class="card p-4 p-md-5 mb-4 border-primary border-opacity-25">
+    <div class="row g-4 align-items-center">
+        <div class="col-lg-5">
+            <span class="badge bg-info-subtle text-info rounded-pill px-3 py-2 mb-2">
+                <i class="bi bi-headset me-1"></i>Soporte y Mejora Continua
+            </span>
+            <h3 class="fw-bold mb-3">¿Tienes problemas para ingresar o una idea para mejorar BudgetBuddy?</h3>
+            <p class="text-muted mb-4">
+                Nuestro equipo revisa personalmente cada reporte técnico y cada sugerencia de nuevas funciones para implementarlas en próximas versiones. No necesitas haber iniciado sesión para escribirnos.
+            </p>
+            <div class="d-flex flex-column gap-3 small">
+                <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-light">
+                    <i class="bi bi-key-fill fs-4 text-primary"></i>
+                    <div>
+                        <div class="fw-bold">Asistencia de Acceso</div>
+                        <div class="text-muted">¿Bloqueo por intentos fallidos o problemas con tu cuenta? Reportalo aquí o usa <a href="{% url 'password_reset' %}">Recuperar contraseña</a>.</div>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-light">
+                    <i class="bi bi-lightbulb-fill fs-4 text-warning"></i>
+                    <div>
+                        <div class="fw-bold">Buzón de Sugerencias</div>
+                        <div class="text-muted">Propón nuevas herramientas o mejoras para el roadmap de BudgetBuddy.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="p-4 rounded-4 bg-light border">
+                <h5 class="fw-bold mb-3"><i class="bi bi-envelope-paper text-primary me-2"></i>Envíanos un mensaje rápido</h5>
+                <form method="post" action="{% url 'support_center' %}">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Tu nombre</label>
+                            {{ support_form.contact_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Correo de contacto</label>
+                            {{ support_form.contact_email }}
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label small fw-semibold">Motivo</label>
+                            {{ support_form.ticket_type }}
+                        </div>
+                        <div class="col-md-7">
+                            <label class="form-label small fw-semibold">Asunto</label>
+                            {{ support_form.subject }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold">Mensaje o Sugerencia</label>
+                            {{ support_form.message }}
+                        </div>
+                        <div class="col-12 d-flex justify-content-between align-items-center mt-3">
+                            <a href="{% url 'support_center' %}" class="small text-decoration-none">
+                                Ir al Centro de Soporte completo <i class="bi bi-arrow-up-right"></i>
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-send me-1"></i>Enviar Mensaje
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

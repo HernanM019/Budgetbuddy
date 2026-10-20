@@ -1,14 +1,15 @@
 {% extends 'budget/base.html' %}
 
-{% block title %}Iniciar sesión - BudgetBuddy{% endblock %}
+{% block title %}Iniciar sesión — BudgetBuddy{% endblock %}
 
 {% block content %}
 <div class="auth-container">
-  <div class="card shadow-sm p-4 auth-card">
-    <h4 class="mb-3 text-center">🔒 Iniciar sesión</h4>
+  <div class="card shadow-sm auth-card">
+    <h4 class="mb-2 text-center">🔒 Iniciar sesión</h4>
+    <p class="text-muted text-center small mb-4">Accede a tu espacio financiero privado</p>
 
     {% if form.errors %}
-      <div class="alert alert-danger text-center" role="alert">
+      <div class="alert alert-danger text-center small" role="alert">
         Usuario o contraseña incorrectos. Intenta nuevamente.
       </div>
     {% endif %}
@@ -16,20 +17,26 @@
     <form method="post" novalidate>
       {% csrf_token %}
       <div class="mb-3">
-        <label for="id_username" class="form-label">Usuario</label>
-        {{ form.username }}
+        <label for="id_username" class="form-label fw-semibold">Usuario</label>
+        <input type="text" name="username" id="id_username" class="form-control" required autofocus value="{{ form.username.value|default:'' }}">
       </div>
       <div class="mb-3">
-        <label for="id_password" class="form-label">Contraseña</label>
-        {{ form.password }}
+        <div class="d-flex justify-content-between">
+          <label for="id_password" class="form-label fw-semibold">Contraseña</label>
+          <a href="{% url 'password_reset' %}" class="small text-decoration-none">¿Olvidaste tu contraseña?</a>
+        </div>
+        <input type="password" name="password" id="id_password" class="form-control" required>
       </div>
 
-      <button type="submit" class="btn btn-primary w-100">Entrar</button>
+      <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">Entrar a mi cuenta</button>
     </form>
 
-    <p class="text-center mt-3">
-      ¿No tenés cuenta? <a href="{% url 'register' %}">Registrate aquí</a>
+    <p class="text-center mt-4 mb-2 small">
+      ¿No tenés cuenta? <a href="{% url 'register' %}" class="fw-semibold">Registrate gratis aquí</a>
     </p>
+    <div class="text-center border-top pt-3 mt-2 small text-muted">
+      ¿Problemas para ingresar? <a href="{% url 'support_center' %}?type=LOGIN_ISSUE" class="text-decoration-none fw-semibold"><i class="bi bi-life-preserver me-1"></i>Contactar a Soporte</a>
+    </div>
   </div>
 </div>
 {% endblock %}

@@ -1,75 +1,246 @@
-body {
-    background-color: #f8fafc;
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bb-primary: #2563eb;
+    --bb-primary-dark: #1d4ed8;
+    --bb-primary-soft: #eff6ff;
+    --bb-accent: #10b981;
+    --bb-bg: #f1f5f9;
+    --bb-surface: #ffffff;
+    --bb-text-main: #0f172a;
+    --bb-text-muted: #64748b;
+    --bb-border: rgba(15, 23, 42, 0.08);
+    --bb-card-radius: 16px;
+    --bb-shadow-sm: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+    --bb-shadow-md: 0 12px 32px -4px rgba(15, 23, 42, 0.08);
 }
 
-h1, h4 {
-    color: #2b2b2b;
+body {
+    background-color: var(--bb-bg);
+    color: var(--bb-text-main);
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--bb-text-main);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+/* ======== Modern Glass Navbar ======== */
+.bb-navbar {
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: -0.03em;
+}
+
+.brand-badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+}
+
+.bb-navbar .nav-link {
+    color: rgba(255, 255, 255, 0.75) !important;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.5rem 0.9rem !important;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.bb-navbar .nav-link:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.bb-navbar .nav-link.active {
+    color: #ffffff !important;
+    background: rgba(59, 130, 246, 0.25);
+    font-weight: 600;
+}
+
+/* ======== Cards & Containers ======== */
+.card {
+    background: var(--bb-surface);
+    border: 1px solid var(--bb-border);
+    border-radius: var(--bb-card-radius);
+    box-shadow: var(--bb-shadow-sm);
+}
+
+.kpi-card {
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--bb-shadow-md) !important;
+}
+
+/* ======== Landing Page Hero ======== */
+.hero-section {
+    background: radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.22) 0%, transparent 45%),
+                radial-gradient(circle at 15% 80%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
+                linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f172a 100%);
+    color: #ffffff;
+    border-radius: 24px;
+    padding: 4.5rem 3rem;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hero-section h1 {
+    color: #ffffff;
+    line-height: 1.15;
+}
+
+.hero-preview-card {
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.feature-icon-box {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+/* ======== Tables & Forms ======== */
+.table > :not(caption) > * > * {
+    padding: 0.9rem 1rem;
 }
 
 table td {
     vertical-align: middle;
 }
 
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.95rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--bb-primary);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
 /* Efecto de eliminación suave para filas borradas */
 .table-danger {
-  transition: opacity 0.8s ease, transform 0.5s ease;
-  opacity: 0.3;
-  transform: scale(0.98);
-}
-/* Color diferente para boton EDITAR */
-.btn-warning {
-  color: #fff;
+    transition: opacity 0.8s ease, transform 0.5s ease;
+    opacity: 0.3;
+    transform: scale(0.98);
 }
 
-/* Centrar tarjetas de autenticación vertical y horizontalmente */
-.auth-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 80vh;
-}
-
-.auth-card {
-  max-width: 400px;
-  width: 100%;
-}
-
-
-/* ======== Auth Pages ======== */
-body.auth-page {
-  background-color: #f5f7fb;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
-
-.auth-card {
-  width: 100%;
-  max-width: 420px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  padding: 2rem;
-}
-
-.auth-title {
-  text-align: center;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  font-size: 1.4rem;
-}
-
-.auth-title span {
-  font-size: 1.6rem;
-  margin-right: 8px;
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.18s ease;
 }
 
 .btn-primary {
-  background-color: #1d4ed8;
-  border: none;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    border: none;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 
 .btn-primary:hover {
-  background-color: #1e40af;
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
 }
+
+.btn-warning {
+    color: #fff;
+}
+
+/* ======== Auth Pages ======== */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 76vh;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 450px;
+    background: var(--bb-surface);
+    border-radius: 20px;
+    box-shadow: var(--bb-shadow-md);
+    padding: 2.5rem;
+}
+
+.category-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+/* ======== Mobile & Tablet Responsiveness ======== */
+@media (max-width: 991.98px) {
+    .bb-navbar .navbar-collapse {
+        background: rgba(15, 23, 42, 0.98);
+        padding: 1rem;
+        border-radius: 14px;
+        margin-top: 0.6rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .hero-section {
+        padding: 2.8rem 1.75rem;
+        border-radius: 18px;
+    }
+
+    .hero-section h1 {
+        font-size: clamp(1.85rem, 6vw, 2.5rem);
+    }
+}
+
+@media (max-width: 575.98px) {
+    .hero-section {
+        padding: 2rem 1.25rem;
+        border-radius: 16px;
+    }
+
+    .hero-section .btn-lg {
+        width: 100%;
+    }
+
+    .auth-card {
+        padding: 1.6rem 1.25rem;
+        margin: 0 0.5rem;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 0.65rem 0.65rem;
+        font-size: 0.88rem;
+    }
+}
+
