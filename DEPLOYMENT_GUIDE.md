@@ -76,21 +76,40 @@ El repositorio ya incluye el archivo **[render.yaml](./render.yaml)** y el coman
 
 ---
 
-## Paso 4 (Opcional): Activar envío de Emails reales con Gmail SMTP
+## Paso 4: Activar envío de Emails reales a tu Gmail en Render Free Tier (Puerto HTTPS 443)
 
-Si quieres que cuando un amigo deje una sugerencia o ticket en la demo pública te llegue un correo real a tu bandeja de Gmail:
+> **⚠️ Nota importante sobre Render Free Tier**: Desde 2024, el plan gratuito (`Free Web Service`) de Render **bloquea por firewall de red todos los puertos salientes SMTP (`25`, `465` y `587`)** para prevenir spam. Por eso `smtp.gmail.com:587` no puede salir desde el contenedor gratuito de Render, pero el **tráfico HTTPS (puerto `443`) sí está 100% permitido**.
 
-1. En tu cuenta de Google, ve a **Seguridad → Verificación en 2 pasos → Contraseñas de aplicaciones (App Passwords)** y genera una clave de 16 letras para `"BudgetBuddy"`.
-2. En **Render → Environment Variables**, agrega:
-   - `DJANGO_EMAIL_BACKEND` = `django.core.mail.backends.smtp.EmailBackend`
-   - `EMAIL_HOST` = `smtp.gmail.com`
-   - `EMAIL_PORT` = `587`
-   - `EMAIL_USE_TLS` = `True`
-   - `EMAIL_HOST_USER` = `tu_correo@gmail.com`
-   - `EMAIL_HOST_PASSWORD` = `xxxx xxxx xxxx xxxx` *(tu contraseña de aplicación de 16 letras)*
-   - `DJANGO_DEFAULT_FROM_EMAIL` = `tu_correo@gmail.com`
-3. Cada nuevo ticket llegará con el asunto:
-   - `[BudgetBuddy | 💡 Sugerencia / Nueva Idea] Ticket #1: ...`
-   - `[BudgetBuddy | 🐛 Falla o Error Técnico] Ticket #2: ...`
-   - `[BudgetBuddy | 🔐 Problema de Acceso / Contraseña] Ticket #3: ...`
-   Listo para filtrar por carpetas en tu correo.
+`BudgetBuddy` ([`budget/tasks.py`](budget/tasks.py)) incluye soporte nativo para enviar correos por **HTTPS (puerto 443)** sin costo alguno mediante cualquiera de estas dos opciones:
+
+### Opción A (Recomendada, 100% con tu propio Gmail en 1 minuto): Webhook HTTPS de Google Apps Script
+1. Abre **[script.google.com](https://script.google.com/)** logueado con tu cuenta de Gmail y haz clic en **"Nuevo proyecto"**.
+2. Borra el código que aparece y pega exactamente estas 6 líneas:
+   ```javascript
+   function doPost(e) {
+     var data = JSON.parse(e.postData.contents);
+     var myEmail = Session.getActiveUser().getEmail();
+     var target = (data.to && data.to.indexOf('.local') === -1) ? data.to : myEmail;
+     MailApp.sendEmail(target, data.subject, data.body);
+     return ContentService.createTextOutput("OK");
+   }
+   ```
+3. Arriba a la derecha, haz clic en **"Implementar" (Deploy) → "Nueva implementación" (New deployment)**.
+4. En el ícono de engranaje ⚙️ selecciona **"Aplicación web" (Web app)** y configura:
+   - **Ejecutar como (Execute as)**: `Yo` *(tu correo de Gmail)*
+   - **Quién tiene acceso (Who has access)**: `Cualquier persona` *(Anyone)*
+5. Haz clic en **"Implementar"**, autoriza el permiso de tu cuenta (`Avanzado -> Ir a Proyecto sin título`) y copia la **URL de la aplicación web** (termina en `/exec`).
+6. En **Render → Environment**, agrega la variable:
+   - `GMAIL_WEBHOOK_URL` = `https://script.google.com/macros/s/AKfycb.../exec`
+   - Asegúrate también de que `DJANGO_SUPERUSER_EMAIL` tenga tu dirección `@gmail.com`.
+
+### Opción B (Alternativa vía API HTTPS): Resend.com Free Tier
+1. Entra con tu cuenta de GitHub en **[resend.com](https://resend.com/)** (plan gratuito de 3,000 emails/mes por HTTPS puerto 443).
+2. Crea una **API Key** (`re_...`) y agrégala en **Render → Environment**:
+   - `RESEND_API_KEY` = `re_xxxxxxxxx`
+   - `DJANGO_SUPERUSER_EMAIL` = *(el mismo email con el que te registraste en Resend)*
+
+Cada nuevo ticket o sugerencia llegará al instante a tu Gmail con el motivo en el asunto:
+- `[BudgetBuddy | 💡 Sugerencia / Nueva Idea] Ticket #1: ...`
+- `[BudgetBuddy | 🐛 Falla o Error Técnico] Ticket #2: ...`
+- `[BudgetBuddy | 🔐 Problema de Acceso / Contraseña] Ticket #3: ...`

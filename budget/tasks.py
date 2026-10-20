@@ -6,8 +6,11 @@ Incluye:
    supera el 80% (En alerta) o el 100% (Excedido) del presupuesto configurado.
 """
 from decimal import Decimal
+import json
 import logging
+import os
 import threading
+import urllib.request
 from celery import shared_task
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -18,6 +21,74 @@ from .models import Budget, SupportTicket
 from .repositories import SupportTicketRepository, TransactionRepository
 
 audit_logger = logging.getLogger('budget.audit')
+
+
+def _deliver_email(subject: str, body: str, recipient_list: list[str]) -> int:
+    """
+    Envía un correo electrónico soportando:
+    1. HTTPS vía Resend API (`RESEND_API_KEY`) — ideal para Render Free Tier (puerto 443).
+    2. HTTPS vía Google Apps Script Webhook (`GMAIL_WEBHOOK_URL`) — usa tu propio Gmail por puerto 443.
+    3. SMTP / EmailBackend estándar de Django (`send_mail`).
+    """
+    if not recipient_list:
+        return 0
+
+    resend_api_key = os.environ.get('RESEND_API_KEY', '').strip()
+    if resend_api_key:
+        try:
+            from_addr = os.environ.get('RESEND_FROM_EMAIL', 'BudgetBuddy <onboarding@resend.dev>').strip()
+            payload = json.dumps({
+                'from': from_addr,
+                'to': recipient_list,
+                'subject': subject,
+                'text': body,
+            }).encode('utf-8')
+            req = urllib.request.Request(
+                'https://api.resend.com/emails',
+                data=payload,
+                headers={
+                    'Authorization': f'Bearer {resend_api_key}',
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'BudgetBuddy/1.1',
+                },
+                method='POST',
+            )
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                if 200 <= resp.status < 300:
+                    audit_logger.info(f"Email enviado exitosamente vía Resend API (HTTPS) a {recipient_list}.")
+                    return len(recipient_list)
+        except Exception as exc:
+            audit_logger.warning(f"Fallo al enviar vía Resend API ({exc}); intentando siguiente método.")
+
+    gmail_webhook_url = os.environ.get('GMAIL_WEBHOOK_URL', '').strip()
+    if gmail_webhook_url:
+        try:
+            payload = json.dumps({
+                'to': ','.join(recipient_list),
+                'subject': subject,
+                'body': body,
+            }).encode('utf-8')
+            req = urllib.request.Request(
+                gmail_webhook_url,
+                data=payload,
+                headers={'Content-Type': 'application/json'},
+                method='POST',
+            )
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                if 200 <= resp.status < 400:
+                    audit_logger.info(f"Email enviado exitosamente vía Gmail HTTPS Webhook a {recipient_list}.")
+                    return len(recipient_list)
+        except Exception as exc:
+            audit_logger.warning(f"Fallo al enviar vía Gmail Webhook ({exc}); intentando siguiente método.")
+
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'alertas@budgetbuddy.local')
+    return send_mail(
+        subject=subject,
+        message=body,
+        from_email=from_email,
+        recipient_list=recipient_list,
+        fail_silently=True,
+    )
 
 
 @shared_task(name='budget.send_admin_ticket_notification')
@@ -43,6 +114,9 @@ def send_admin_ticket_notification_task(ticket_id: int) -> int:
         else "Visitante no autenticado (Landing Page / Login)"
     )
 
+    render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME', '').strip()
+    base_url = f"https://{render_host}" if render_host else "http://127.0.0.1:8000"
+
     body = (
         f"Hola equipo de administración de BudgetBuddy,\n\n"
         f"Se ha registrado un nuevo ingreso en el Centro de Sugerencias y Soporte.\n"
@@ -59,16 +133,13 @@ def send_admin_ticket_notification_task(ticket_id: int) -> int:
         f"{ticket.message}\n"
         f"----------------------------------------------------------------\n\n"
         f"Puedes gestionar y responder este ticket desde el Buzón de Administración:\n"
-        f"http://127.0.0.1:8000/support/manage/\n"
+        f"{base_url}/support/manage/\n"
     )
 
-    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'alertas@budgetbuddy.local')
-    sent = send_mail(
+    sent = _deliver_email(
         subject=subject,
-        message=body,
-        from_email=from_email,
+        body=body,
         recipient_list=recipient_list,
-        fail_silently=True,
     )
     audit_logger.info(
         f"Notificación de ticket #{ticket.pk} ({ticket.ticket_type}) enviada a {len(recipient_list)} admin(s)."
@@ -112,13 +183,10 @@ def check_and_send_budget_alert_task(user_id: int, category_id: int, month: int,
         f"• Saldo disponible: ${budget.amount - spent}\n\n"
         f"Ingresa a tu Dashboard en BudgetBuddy para revisar el detalle de tus movimientos.\n"
     )
-    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'alertas@budgetbuddy.local')
-    sent = send_mail(
+    sent = _deliver_email(
         subject=subject,
-        message=body,
-        from_email=from_email,
+        body=body,
         recipient_list=[user.email],
-        fail_silently=True,
     )
     audit_logger.info(
         f"Alerta de presupuesto ({pct:.1f}%) enviada a usuario @{user.username} para categoría '{budget.category.name}'."
