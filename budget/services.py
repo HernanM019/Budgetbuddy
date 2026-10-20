@@ -430,7 +430,11 @@ class SupportTicketService:
 
     @staticmethod
     def notify_admins_new_ticket(ticket: SupportTicket):
-        return dispatch_task_safely(send_admin_ticket_notification_task, ticket.pk)
+        try:
+            return dispatch_task_safely(send_admin_ticket_notification_task, ticket.pk)
+        except Exception as exc:
+            audit_logger.warning(f"No se pudo enviar notificación de ticket #{ticket.pk}: {exc}")
+            return 0
 
     @staticmethod
     @db_transaction.atomic

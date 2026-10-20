@@ -19,7 +19,7 @@ SECRET_KEY = os.environ.get(
     'django-insecure-=df=dbz0@)n2+stpl68_@@6x!)nah%o9&2k!(ei!1420uvp2f2',
 )
 
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').strip().lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = [
     host.strip()
@@ -137,15 +137,15 @@ def _parse_database_url(db_url: str) -> dict:
 
 
 # Base de datos:
-# 1. Prioriza DATABASE_URL (Neon.tech / Render / Koyeb) si contiene un host válido
+# 1. Prioriza DATABASE_URL (Neon.tech / Render / Koyeb) si contiene un host válido (no placeholder)
 # 2. Luego variables individuales POSTGRES_DB (Docker Compose / GitHub Actions)
-# 3. Por defecto SQLite local para desarrollo rápido
+# 3. Por defecto SQLite local para desarrollo rápido o demos sin DB externa
 _raw_db_url = os.environ.get('DATABASE_URL', '').strip()
-if _raw_db_url:
+if _raw_db_url and 'ep-tu-host' not in _raw_db_url and 'TU_PASSWORD' not in _raw_db_url:
     DATABASES = {
         'default': _parse_database_url(_raw_db_url)
     }
-elif os.environ.get('POSTGRES_DB'):
+elif os.environ.get('POSTGRES_DB', '').strip():
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -173,8 +173,9 @@ CACHES = {
 }
 
 # Configuración de Celery + Redis
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+_broker_env = os.environ.get('CELERY_BROKER_URL', '').strip()
+CELERY_BROKER_URL = _broker_env or 'memory://'
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', '').strip() or 'cache+memory://'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -185,9 +186,11 @@ CELERY_BROKER_TRANSPORT_OPTIONS = {
     'interval_step': 0.1,
     'interval_max': 0.2,
 }
-# Si no se define CELERY_BROKER_URL en el entorno, ejecuta las tareas en modo eager (inmediato)
-_default_eager = 'False' if os.environ.get('CELERY_BROKER_URL') else 'True'
-CELERY_TASK_ALWAYS_EAGER = os.environ.get('CELERY_TASK_ALWAYS_EAGER', _default_eager).lower() in ('true', '1', 'yes')
+# Si no hay CELERY_BROKER_URL definido, siempre ejecuta en modo eager (inmediato en memoria)
+if not _broker_env:
+    CELERY_TASK_ALWAYS_EAGER = True
+else:
+    CELERY_TASK_ALWAYS_EAGER = os.environ.get('CELERY_TASK_ALWAYS_EAGER', 'False').strip().lower() in ('true', '1', 'yes')
 CELERY_TASK_EAGER_PROPAGATES = True
 
 # Django REST Framework + JWT + OpenAPI (drf-spectacular)
