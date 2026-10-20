@@ -32,12 +32,19 @@ class Command(BaseCommand):
                 'is_superuser': True,
             },
         )
-        user.is_staff = True
-        user.is_superuser = True
-        if email:
+        needs_save = False
+        if not user.is_staff or not user.is_superuser:
+            user.is_staff = True
+            user.is_superuser = True
+            needs_save = True
+        if email and user.email != email:
             user.email = email
-        user.set_password(password)
-        user.save()
+            needs_save = True
+        if created or not user.check_password(password):
+            user.set_password(password)
+            needs_save = True
+        if needs_save:
+            user.save()
         OnboardingService.setup_new_user(user)
 
         if created:
