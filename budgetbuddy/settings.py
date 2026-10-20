@@ -99,16 +99,32 @@ def _parse_database_url(db_url: str) -> dict:
     """
     Convierte una cadena DATABASE_URL (ej. de Neon.tech, Render o Supabase)
     en un diccionario de configuración DATABASES de Django sin dependencias externas.
+    Tolera formatos copiados como `psql 'postgresql://...'`, comillas envolventes o falta de `/neondb`.
     """
-    parsed = urlparse(db_url)
+    clean_url = (db_url or '').strip()
+    for scheme in ('postgresql://', 'postgres://'):
+        idx = clean_url.find(scheme)
+        if idx != -1:
+            clean_url = clean_url[idx:]
+            break
+    clean_url = clean_url.strip("'\" \t\r\n")
+    # En caso de que venga con fragmentos tras una comilla final
+    if "'" in clean_url:
+        clean_url = clean_url.split("'", 1)[0].strip()
+    if '"' in clean_url:
+        clean_url = clean_url.split('"', 1)[0].strip()
+
+    parsed = urlparse(clean_url)
     query_opts = parse_qs(parsed.query)
     options = {}
     if 'sslmode' in query_opts:
         options['sslmode'] = query_opts['sslmode'][0]
 
+    db_name = unquote(parsed.path.lstrip('/')) or os.environ.get('POSTGRES_DB', 'neondb')
+
     config = {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': parsed.path.lstrip('/'),
+        'NAME': db_name,
         'USER': unquote(parsed.username or ''),
         'PASSWORD': unquote(parsed.password or ''),
         'HOST': parsed.hostname or 'localhost',
@@ -121,12 +137,13 @@ def _parse_database_url(db_url: str) -> dict:
 
 
 # Base de datos:
-# 1. Prioriza DATABASE_URL (Neon.tech / Render / Koyeb)
+# 1. Prioriza DATABASE_URL (Neon.tech / Render / Koyeb) si contiene un host válido
 # 2. Luego variables individuales POSTGRES_DB (Docker Compose / GitHub Actions)
 # 3. Por defecto SQLite local para desarrollo rápido
-if os.environ.get('DATABASE_URL'):
+_raw_db_url = os.environ.get('DATABASE_URL', '').strip()
+if _raw_db_url:
     DATABASES = {
-        'default': _parse_database_url(os.environ['DATABASE_URL'])
+        'default': _parse_database_url(_raw_db_url)
     }
 elif os.environ.get('POSTGRES_DB'):
     DATABASES = {
